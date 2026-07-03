@@ -1,0 +1,29 @@
+{
+  "source_event_id": "evt-finding-001",
+  "event_type": "finding_observation",
+  "source_stream_id": "stream-alpha",
+  "source_sequence": 2,
+  "schema_version": 1,
+  "occurred_at": "2026-01-01T10:05:00Z",
+  "payload": {
+    "cluster_id": "cluster-demo",
+    "resource_kind": "Deployment",
+    "resource_uid": "deploy-uid-123",
+    "vuln_class": "sql_injection",
+    "normalized_location_signature": "sig-items-id-injection",
+    "verification_key": "check-sqli-items-id",
+    "check_version": "2.3.0",
+    "relevant_context": {
+      "protocol": "http",
+      "port": 8443,
+      "normalized_route": "/api/v1/items",
+      "parameters": {
+        "depth": 2,
+        "follow_redirects": true,
+        "mode": "safe"
+      },
+      "is_address_bound": false
+    },
+    "compatibility_policy_version": 1
+  }
+}

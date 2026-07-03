@@ -1,0 +1,11 @@
+{
+  "source_event_id": "evt-complete-001",
+  "event_type": "engagement_completed",
+  "source_stream_id": "stream-alpha",
+  "source_sequence": 4,
+  "schema_version": 1,
+  "occurred_at": "2026-01-01T12:00:00Z",
+  "payload": {
+    "last_data_sequence": 3
+  }
+}
