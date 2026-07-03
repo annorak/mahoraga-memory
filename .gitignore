@@ -1,0 +1,23 @@
+# Build output
+target/
+
+# IDE metadata
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# macOS
+.DS_Store
+
+# Local environment files
+.env
+.env.*
+.claude/settings.local.json
+
+# Local demo artifacts (see implementation plan, TASK-019)
+artifacts/
+
+# Planning documents excluded from version control by owner decision
+old docs/
+tasks/
