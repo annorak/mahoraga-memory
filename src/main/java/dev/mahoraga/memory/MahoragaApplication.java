@@ -20,6 +20,7 @@ public class MahoragaApplication extends Application<MahoragaConfiguration> {
   public void run(MahoragaConfiguration configuration, Environment environment) {
     // The single application injector. Later tasks obtain their components from
     // it and register them with Dropwizard explicitly.
-    Guice.createInjector(new MahoragaModule(configuration));
+    Guice.createInjector(
+        new MahoragaModule(configuration, environment.getObjectMapper(), environment.getValidator()));
   }
 }

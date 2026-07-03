@@ -1,0 +1,29 @@
+{
+  "source_event_id": "evt-attempt-001",
+  "event_type": "test_attempt",
+  "source_stream_id": "stream-alpha",
+  "source_sequence": 3,
+  "schema_version": 1,
+  "occurred_at": "2026-01-01T10:10:00Z",
+  "payload": {
+    "cluster_id": "cluster-demo",
+    "resource_kind": "Deployment",
+    "resource_uid": "deploy-uid-123",
+    "verification_key": "check-sqli-items-id",
+    "check_version": "2.3.0",
+    "relevant_context": {
+      "protocol": "http",
+      "port": 8443,
+      "normalized_route": "/api/v1/items",
+      "parameters": {
+        "depth": 2,
+        "follow_redirects": true,
+        "mode": "safe"
+      },
+      "is_address_bound": false
+    },
+    "execution_status": "completed",
+    "result": "not_detected",
+    "compatibility_policy_version": 1
+  }
+}
