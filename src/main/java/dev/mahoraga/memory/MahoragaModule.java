@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import dev.mahoraga.memory.contract.SourceEventCodec;
 import dev.mahoraga.memory.contract.SourceEventValidator;
+import dev.mahoraga.memory.identity.AssetIdentityService;
 import dev.mahoraga.memory.ingest.IngestionTransaction;
 import dev.mahoraga.memory.ingest.SourceEventInbox;
 import jakarta.validation.Validator;
@@ -44,5 +45,6 @@ public final class MahoragaModule extends AbstractModule {
     bind(SourceEventCodec.class);
     bind(SourceEventInbox.class);
     bind(IngestionTransaction.class);
+    bind(AssetIdentityService.class);
   }
 }
