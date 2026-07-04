@@ -3,6 +3,7 @@ package dev.mahoraga.memory.contract;
 import static dev.mahoraga.memory.contract.ContractTestSupport.codec;
 import static dev.mahoraga.memory.contract.ContractTestSupport.contract;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -125,6 +126,52 @@ class SourceEventCodecTest {
   }
 
   @Test
+  void rejectsWrongEnvelopeScalarTypes() {
+    assertError(
+        MINIMAL_COMPLETION.replace("\"source_sequence\":4", "\"source_sequence\":\"4\""),
+        "source_sequence");
+    assertError(
+        MINIMAL_COMPLETION.replace("\"source_sequence\":4", "\"source_sequence\":4.5"),
+        "source_sequence");
+    assertError(
+        MINIMAL_COMPLETION.replace("\"schema_version\":1", "\"schema_version\":\"1\""),
+        "schema_version");
+    assertError(
+        MINIMAL_COMPLETION.replace("\"source_event_id\":\"evt-x\"", "\"source_event_id\":7"),
+        "source_event_id");
+  }
+
+  @Test
+  void rejectsWrongPayloadScalarTypes() {
+    assertError(
+        MINIMAL_COMPLETION.replace(
+            "\"last_data_sequence\":3", "\"last_data_sequence\":\"3\""),
+        "last_data_sequence");
+    assertError(
+        contract("asset-observation.json")
+            .replace("\"cluster_id\": \"cluster-demo\"", "\"cluster_id\": 7"),
+        "cluster_id");
+    assertError(
+        contract("finding-observation.json").replace("\"port\": 8443", "\"port\": \"8443\""),
+        "port");
+    assertError(
+        contract("finding-observation.json")
+            .replace("\"is_address_bound\": false", "\"is_address_bound\": \"false\""),
+        "is_address_bound");
+    assertError(
+        contract("test-attempt.json")
+            .replace("\"execution_status\": \"completed\"", "\"execution_status\": 1"),
+        "execution_status");
+  }
+
+  @Test
+  void rejectsNonFiniteNumbers() {
+    String finding = contract("finding-observation.json");
+    assertError(finding.replace("\"depth\": 2", "\"depth\": NaN"), "invalid");
+    assertError(finding.replace("\"depth\": 2", "\"depth\": Infinity"), "invalid");
+  }
+
+  @Test
   void rejectsOversizedInput() {
     String oversized =
         contract("asset-observation.json")
@@ -152,6 +199,21 @@ class SourceEventCodecTest {
         assertThrows(InvalidSourceEventException.class, () -> codec.decode(input));
     assertTrue(error.getMessage().contains("evt-x"));
     assertTrue(!error.getMessage().contains("last_data_sequence"));
+  }
+
+  @Test
+  void jacksonErrorsDoNotExposeUnrelatedPayloadValues() {
+    String sentinel = "SENSITIVE-BANNER-MUST-NOT-LEAK";
+    String input =
+        contract("asset-observation.json")
+            .replace(
+                "\"banner\": \"nginx/1.25\"",
+                "\"banner\": \"" + sentinel + "\",\n    \"unexpected\": true");
+
+    InvalidSourceEventException error =
+        assertThrows(InvalidSourceEventException.class, () -> codec.decode(input));
+
+    assertFalse(error.getMessage().contains(sentinel), error::getMessage);
   }
 
   private void assertError(String json, String expectedFragment) {

@@ -5,8 +5,13 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.cfg.CoercionAction;
+import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
+import com.fasterxml.jackson.databind.type.LogicalType;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,12 +34,14 @@ public final class SourceEventCodec {
 
   private final ObjectMapper strictMapper;
   private final SourceEventValidator validator;
-  private final SourceEventCanonicalizer canonicalizer = new SourceEventCanonicalizer();
+  private final SourceEventCanonicalizer canonicalizer;
 
   @Inject
   public SourceEventCodec(ObjectMapper objectMapper, SourceEventValidator validator) {
-    this.strictMapper = strictCopyOf(objectMapper);
+    ObjectMapper managedMapper = Objects.requireNonNull(objectMapper, "objectMapper");
+    this.strictMapper = strictCopyOf(managedMapper);
     this.validator = Objects.requireNonNull(validator, "validator");
+    this.canonicalizer = new SourceEventCanonicalizer(managedMapper);
   }
 
   public CanonicalSourceEvent decode(String json) {
@@ -104,13 +111,7 @@ public final class SourceEventCodec {
       throw new InvalidSourceEventException(
           fieldError(eventId, "payload", "must be a JSON object"));
     }
-    Class<? extends SourcePayload> payloadType =
-        switch (eventType) {
-          case ASSET_OBSERVATION -> SourcePayload.AssetObservation.class;
-          case FINDING_OBSERVATION -> SourcePayload.FindingObservation.class;
-          case TEST_ATTEMPT -> SourcePayload.TestAttempt.class;
-          case ENGAGEMENT_COMPLETED -> SourcePayload.EngagementCompleted.class;
-        };
+    Class<? extends SourcePayload> payloadType = eventType.payloadType();
     try {
       return strictMapper.treeToValue(payloadNode, payloadType);
     } catch (JsonProcessingException e) {
@@ -125,9 +126,17 @@ public final class SourceEventCodec {
         .setStreamReadConstraints(
             StreamReadConstraints.builder().maxNestingDepth(MAX_JSON_NESTING_DEPTH).build());
     copy.enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+    copy.disable(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS);
     copy.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     copy.enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS);
+    copy.enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS);
     copy.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
+    copy.disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);
+    copy.disable(MapperFeature.ALLOW_COERCION_OF_SCALARS);
+    copy.coercionConfigFor(LogicalType.Textual)
+        .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
+        .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
+        .setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail);
     return copy;
   }
 
@@ -151,8 +160,19 @@ public final class SourceEventCodec {
     return subject + ": " + field + " " + problem;
   }
 
-  private static String messageOf(IOException e) {
-    return e instanceof JsonProcessingException jackson ? jackson.getOriginalMessage() : e.getMessage();
+  private static String messageOf(IOException error) {
+    String message =
+        error instanceof JsonProcessingException jackson
+            ? jackson.getOriginalMessage()
+            : error.getMessage();
+    if (error instanceof JsonMappingException mappingException
+        && !mappingException.getPath().isEmpty()) {
+      String field = mappingException.getPath().getLast().getFieldName();
+      if (field != null) {
+        return field + " " + message;
+      }
+    }
+    return message;
   }
 
   private record RawEnvelope(

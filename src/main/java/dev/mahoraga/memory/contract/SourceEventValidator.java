@@ -35,11 +35,20 @@ public final class SourceEventValidator {
       throw new InvalidSourceEventException(prefix(event) + describe(violations));
     }
     validateEnvelope(event);
+    validatePayloadMatchesEventType(event);
     switch (event.payload()) {
       case AssetObservation payload -> validateAssetObservation(event, payload);
       case FindingObservation payload -> validateFindingObservation(event, payload);
       case TestAttempt payload -> validateTestAttempt(event, payload);
       case EngagementCompleted payload -> validateCompletion(event, payload);
+    }
+  }
+
+  private void validatePayloadMatchesEventType(SourceEvent event) {
+    if (!event.eventType().payloadType().isInstance(event.payload())) {
+      fail(
+          event,
+          "event_type " + event.eventType().wireValue() + " does not match payload");
     }
   }
 

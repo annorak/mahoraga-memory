@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -20,7 +21,11 @@ import java.util.TreeMap;
  */
 final class SourceEventCanonicalizer {
 
-  private final ObjectMapper canonicalMapper = new ObjectMapper();
+  private final ObjectMapper canonicalMapper;
+
+  SourceEventCanonicalizer(ObjectMapper objectMapper) {
+    this.canonicalMapper = Objects.requireNonNull(objectMapper, "objectMapper").copy();
+  }
 
   byte[] canonicalBytes(SourceEvent event) {
     Map<String, Object> envelope = new LinkedHashMap<>();

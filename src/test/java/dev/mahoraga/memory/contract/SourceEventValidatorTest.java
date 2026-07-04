@@ -42,6 +42,30 @@ class SourceEventValidatorTest {
   }
 
   @Test
+  void rejectsEveryEventTypePayloadMismatch() {
+    Map<EventType, SourcePayload> payloads =
+        Map.of(
+            EventType.ASSET_OBSERVATION,
+            validAsset(),
+            EventType.FINDING_OBSERVATION,
+            validFinding(),
+            EventType.TEST_ATTEMPT,
+            attempt(ExecutionStatus.COMPLETED, TestResult.DETECTED),
+            EventType.ENGAGEMENT_COMPLETED,
+            new EngagementCompleted(3L));
+
+    for (EventType eventType : EventType.values()) {
+      for (Map.Entry<EventType, SourcePayload> entry : payloads.entrySet()) {
+        if (eventType != entry.getKey()) {
+          SourceEvent event =
+              new SourceEvent("evt-mismatch", eventType, "s", 4, 1, VALID_TIME, entry.getValue());
+          assertInvalid(event);
+        }
+      }
+    }
+  }
+
+  @Test
   void rejectsSubMicrosecondOccurrenceTime() {
     assertInvalid(
         new SourceEvent(

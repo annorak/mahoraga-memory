@@ -13,8 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterAll;
@@ -66,28 +64,8 @@ class PostgreSqlSchemaTest {
   }
 
   @Test
-  void createsExactlySevenApplicationTables() throws SQLException {
-    Set<String> tables = new HashSet<>();
-    try (Statement statement = connection.createStatement();
-        ResultSet rs =
-            statement.executeQuery(
-                "SELECT table_name FROM information_schema.tables"
-                    + " WHERE table_schema = 'public' AND table_type = 'BASE TABLE'"
-                    + " AND table_name <> 'flyway_schema_history'")) {
-      while (rs.next()) {
-        tables.add(rs.getString(1));
-      }
-    }
-    assertEquals(
-        Set.of(
-            "engagements",
-            "source_events",
-            "assets",
-            "asset_observations",
-            "findings",
-            "finding_occurrences",
-            "test_attempts"),
-        tables);
+  void createsExactSchemaContract() throws SQLException {
+    SchemaCatalog.assertExactSchema(connection);
   }
 
   @Test
@@ -178,19 +156,12 @@ class PostgreSqlSchemaTest {
 
   @Test
   void enforcesAssetIdentity() throws SQLException {
-    db.asset("t-asset", UUID.randomUUID(), "cluster-demo", "deploy-1");
-    db.assertViolation(
-        "uq_assets_authoritative_key",
-        "INSERT INTO assets (tenant_id, canonical_asset_id, cluster_id, resource_kind,"
-            + " resource_uid) VALUES ('t-asset', ?, 'cluster-demo', 'Deployment', 'deploy-1')",
-        UUID.randomUUID());
-    db.assertViolation(
-        "ck_assets_resource_kind",
-        "INSERT INTO assets (tenant_id, canonical_asset_id, cluster_id, resource_kind,"
-            + " resource_uid) VALUES ('t-asset', ?, 'cluster-demo', 'Pod', 'pod-1')",
-        UUID.randomUUID());
-    // The same authoritative key under another tenant is a distinct asset.
-    db.asset("t-asset-b", UUID.randomUUID(), "cluster-demo", "deploy-1");
+    db.assertAssetIdentity();
+  }
+
+  @Test
+  void requiresMeaningfulObservationSignals() throws SQLException {
+    db.assertObservationSignalsAreMeaningful();
   }
 
   @Test
@@ -273,62 +244,54 @@ class PostgreSqlSchemaTest {
 
   @Test
   void blocksCrossTenantReferences() throws SQLException {
-    UUID assetA = db.seedTenant("t-iso-a", "evt-iso-a");
-    UUID assetB = db.seedTenant("t-iso-b", "evt-iso-b");
-
-    // Tenant B may not attach children to tenant A's rows. Each case violates
-    // exactly one constraint so the assertion is unambiguous.
-    db.assertViolation(
-        "fk_findings_asset",
-        "INSERT INTO findings (tenant_id, finding_id, canonical_asset_id, vuln_class,"
-            + " normalized_location_signature, match_key_version, verification_key,"
-            + " check_version, relevant_context_hash, compatibility_policy_version)"
-            + " VALUES ('t-iso-b', ?, ?, 'xss', 'sig-x', 1, 'check-key', '1.0', ?, 1)",
-        UUID.randomUUID(), assetA, SchemaTestSupport.VALID_HASH);
-    db.assertViolation(
-        "fk_test_attempts_source_event",
-        attemptSql("t-iso-b", "evt-iso-a", assetB, "completed", "'detected'"));
-    db.assertViolation(
-        "fk_test_attempts_asset",
-        attemptSql("t-iso-b", "evt-iso-b", assetA, "completed", "'detected'"));
-    db.assertViolation(
-        "fk_asset_observations_asset",
-        observationSql("RESOLVED", "AUTHORITATIVE_DEPLOYMENT_KEY"),
-        "t-iso-b", "evt-iso-b", assetA, "deploy-uid-t-iso-a");
+    db.assertEveryCrossTenantReference();
   }
 
   @Test
   void enforcesAttemptOutcomeLegality() throws SQLException {
     UUID assetId = db.seedTenant("t-att", "evt-att-0");
     String[][] legal = {
-      {"completed", "'detected'"}, {"completed", "'not_detected'"},
-      {"failed", "NULL"}, {"failed", "'inconclusive'"},
-      {"blocked", "'inconclusive'"}, {"partial", "'inconclusive'"},
-      {"partial", "NULL"}, {"skipped", "NULL"},
+      {"completed", "'detected'"},
+      {"completed", "'not_detected'"},
+      {"failed", "NULL"},
+      {"failed", "'inconclusive'"},
+      {"blocked", "NULL"},
+      {"blocked", "'inconclusive'"},
+      {"partial", "NULL"},
+      {"partial", "'inconclusive'"},
+      {"skipped", "NULL"},
+      {"skipped", "'inconclusive'"},
     };
     String[][] illegal = {
-      {"completed", "NULL"}, {"completed", "'inconclusive'"},
-      {"failed", "'detected'"}, {"failed", "'not_detected'"},
-      {"blocked", "'not_detected'"}, {"partial", "'detected'"},
+      {"completed", "NULL"},
+      {"completed", "'inconclusive'"},
+      {"failed", "'detected'"},
+      {"failed", "'not_detected'"},
+      {"blocked", "'detected'"},
+      {"blocked", "'not_detected'"},
+      {"partial", "'detected'"},
+      {"partial", "'not_detected'"},
+      {"skipped", "'detected'"},
       {"skipped", "'not_detected'"},
     };
     int sequence = 1;
-    for (String[] pair : legal) {
-      String eventId = "evt-att-" + sequence;
-      db.sourceEvent("t-att", "eng-1", "stream-t-att", ++sequence, eventId, "test_attempt");
-      db.exec(attemptSql("t-att", eventId, assetId, pair[0], pair[1]));
-    }
-    for (String[] pair : illegal) {
-      String eventId = "evt-att-" + sequence;
-      db.sourceEvent("t-att", "eng-1", "stream-t-att", ++sequence, eventId, "test_attempt");
-      db.assertViolation(
-          "ck_test_attempts_outcome_pairing",
-          attemptSql("t-att", eventId, assetId, pair[0], pair[1]));
-    }
-    // 'maybe' violates both the result vocabulary and the pairing check; either
-    // named ck_test_attempts constraint proves the vocabulary is closed.
+    sequence = db.assertAttemptPairs(assetId, legal, sequence, true);
+    db.assertAttemptPairs(assetId, illegal, sequence, false);
+  }
+
+  @Test
+  void rejectsUnknownAttemptVocabulary() throws SQLException {
+    UUID assetId = db.seedTenant("t-att-vocab", "evt-att-vocab-0");
+    db.sourceEvent(
+        "t-att-vocab", "eng-1", "stream-t-att-vocab", 2, "evt-status", "test_attempt");
     db.assertViolation(
-        "ck_test_attempts", attemptSql("t-att", "evt-att-1", assetId, "completed", "'maybe'"));
+        "ck_test_attempts_execution_status",
+        attemptSql("t-att-vocab", "evt-status", assetId, "unknown", "NULL"));
+    db.sourceEvent(
+        "t-att-vocab", "eng-1", "stream-t-att-vocab", 3, "evt-result", "test_attempt");
+    db.assertViolation(
+        "ck_test_attempts",
+        attemptSql("t-att-vocab", "evt-result", assetId, "completed", "'unknown'"));
   }
 
 }

@@ -98,13 +98,24 @@ class CanonicalSourceHashTest {
         hashOf(finding),
         hashOf(finding.replace("\"depth\": 2", "\"depth\": 2.0")),
         "equivalent numeric representations share one canonical form");
+  }
 
+  @Test
+  void mapInsertionOrderDoesNotAffectTheHash() {
     String labelsReordered =
         contract("asset-observation.json")
             .replace(
                 "\"app\": \"api\",\n      \"tier\": \"backend\"",
                 "\"tier\": \"backend\",\n      \"app\": \"api\"");
     assertEquals(hashOf(contract("asset-observation.json")), hashOf(labelsReordered));
+
+    String finding = contract("finding-observation.json");
+    String parametersReordered =
+        finding.replace(
+            "\"depth\": 2,\n        \"follow_redirects\": true,\n        \"mode\": \"safe\"",
+            "\"mode\": \"safe\",\n        \"depth\": 2,\n        \"follow_redirects\": true");
+    assertNotEquals(finding, parametersReordered, "parameter-order mutation must change input");
+    assertEquals(hashOf(finding), hashOf(parametersReordered));
   }
 
   @Test
@@ -164,6 +175,71 @@ class CanonicalSourceHashTest {
             .replace("\"source_sequence\": 4", "\"source_sequence\": 5")
             .replace("\"last_data_sequence\": 3", "\"last_data_sequence\": 4");
     assertNotEquals(hashOf(completion), hashOf(shiftedCompletion));
+  }
+
+  @Test
+  void remainingFindingFieldsChangeTheHash() {
+    assertMutationChangesHash(
+        "finding-observation.json",
+        "\"cluster_id\": \"cluster-demo\"",
+        "\"cluster_id\": \"cluster-other\"");
+    assertMutationChangesHash(
+        "finding-observation.json",
+        "\"resource_uid\": \"deploy-uid-123\"",
+        "\"resource_uid\": \"deploy-uid-124\"");
+    assertMutationChangesHash(
+        "finding-observation.json",
+        "\"follow_redirects\": true",
+        "\"follow_redirects\": false");
+
+    String finding = contract("finding-observation.json");
+    String withAddress =
+        finding.replace(
+            "\"is_address_bound\": false",
+            "\"target_address\": \"10.0.0.7\",\n      \"is_address_bound\": false");
+    assertNotEquals(hashOf(finding), hashOf(withAddress), "target_address");
+    assertNotEquals(
+        hashOf(withAddress),
+        hashOf(withAddress.replace("\"is_address_bound\": false", "\"is_address_bound\": true")),
+        "is_address_bound");
+  }
+
+  @Test
+  void everyAttemptTargetFieldChangesTheHash() {
+    assertMutationChangesHash(
+        "test-attempt.json",
+        "\"cluster_id\": \"cluster-demo\"",
+        "\"cluster_id\": \"cluster-other\"");
+    assertMutationChangesHash(
+        "test-attempt.json",
+        "\"resource_uid\": \"deploy-uid-123\"",
+        "\"resource_uid\": \"deploy-uid-124\"");
+    assertMutationChangesHash(
+        "test-attempt.json",
+        "\"verification_key\": \"check-sqli-items-id\"",
+        "\"verification_key\": \"check-other\"");
+    assertMutationChangesHash(
+        "test-attempt.json",
+        "\"check_version\": \"2.3.0\"",
+        "\"check_version\": \"2.4.0\"");
+  }
+
+  @Test
+  void everyAttemptContextFieldChangesTheHash() {
+    assertMutationChangesHash(
+        "test-attempt.json", "\"protocol\": \"http\"", "\"protocol\": \"grpc\"");
+    assertMutationChangesHash("test-attempt.json", "\"port\": 8443", "\"port\": 9443");
+    assertMutationChangesHash(
+        "test-attempt.json",
+        "\"normalized_route\": \"/api/v1/items\"",
+        "\"normalized_route\": \"/api/v2/items\"");
+    assertMutationChangesHash("test-attempt.json", "\"depth\": 2", "\"depth\": 3");
+    assertMutationChangesHash(
+        "test-attempt.json",
+        "\"follow_redirects\": true",
+        "\"follow_redirects\": false");
+    assertMutationChangesHash(
+        "test-attempt.json", "\"mode\": \"safe\"", "\"mode\": \"deep\"");
   }
 
   @Test

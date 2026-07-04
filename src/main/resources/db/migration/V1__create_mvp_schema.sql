@@ -14,9 +14,9 @@ CREATE TABLE engagements (
     -- tenant or engagement.
     CONSTRAINT uq_engagements_source_stream UNIQUE (source_stream_id),
     CONSTRAINT uq_engagements_stream_binding UNIQUE (tenant_id, engagement_id, source_stream_id),
-    CONSTRAINT ck_engagements_tenant_nonblank CHECK (btrim(tenant_id) <> ''),
-    CONSTRAINT ck_engagements_engagement_nonblank CHECK (btrim(engagement_id) <> ''),
-    CONSTRAINT ck_engagements_stream_nonblank CHECK (btrim(source_stream_id) <> ''),
+    CONSTRAINT ck_engagements_tenant_nonblank CHECK (tenant_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_engagements_engagement_nonblank CHECK (engagement_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_engagements_stream_nonblank CHECK (source_stream_id ~ '[^[:space:]]'),
     CONSTRAINT ck_engagements_last_sequence_positive
         CHECK (last_data_sequence IS NULL OR last_data_sequence > 0)
 );
@@ -39,10 +39,10 @@ CREATE TABLE source_events (
     CONSTRAINT fk_source_events_engagement
         FOREIGN KEY (tenant_id, engagement_id, source_stream_id)
         REFERENCES engagements (tenant_id, engagement_id, source_stream_id),
-    CONSTRAINT ck_source_events_tenant_nonblank CHECK (btrim(tenant_id) <> ''),
-    CONSTRAINT ck_source_events_engagement_nonblank CHECK (btrim(engagement_id) <> ''),
-    CONSTRAINT ck_source_events_event_id_nonblank CHECK (btrim(source_event_id) <> ''),
-    CONSTRAINT ck_source_events_stream_nonblank CHECK (btrim(source_stream_id) <> ''),
+    CONSTRAINT ck_source_events_tenant_nonblank CHECK (tenant_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_source_events_engagement_nonblank CHECK (engagement_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_source_events_event_id_nonblank CHECK (source_event_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_source_events_stream_nonblank CHECK (source_stream_id ~ '[^[:space:]]'),
     CONSTRAINT ck_source_events_event_type CHECK (event_type IN
         ('asset_observation', 'finding_observation', 'test_attempt', 'engagement_completed')),
     CONSTRAINT ck_source_events_sequence_positive CHECK (source_sequence > 0),
@@ -68,9 +68,9 @@ CREATE TABLE assets (
     -- Supports exact-key composite references from asset_observations.
     CONSTRAINT uq_assets_exact_reference
         UNIQUE (tenant_id, canonical_asset_id, cluster_id, resource_kind, resource_uid),
-    CONSTRAINT ck_assets_tenant_nonblank CHECK (btrim(tenant_id) <> ''),
-    CONSTRAINT ck_assets_cluster_nonblank CHECK (btrim(cluster_id) <> ''),
-    CONSTRAINT ck_assets_resource_uid_nonblank CHECK (btrim(resource_uid) <> ''),
+    CONSTRAINT ck_assets_tenant_nonblank CHECK (tenant_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_assets_cluster_nonblank CHECK (cluster_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_assets_resource_uid_nonblank CHECK (resource_uid ~ '[^[:space:]]'),
     CONSTRAINT ck_assets_resource_kind CHECK (resource_kind = 'Deployment')
 );
 
@@ -99,17 +99,28 @@ CREATE TABLE asset_observations (
     CONSTRAINT fk_asset_observations_asset
         FOREIGN KEY (tenant_id, canonical_asset_id, cluster_id, resource_kind, resource_uid)
         REFERENCES assets (tenant_id, canonical_asset_id, cluster_id, resource_kind, resource_uid),
-    CONSTRAINT ck_asset_observations_tenant_nonblank CHECK (btrim(tenant_id) <> ''),
-    CONSTRAINT ck_asset_observations_cluster_nonblank CHECK (btrim(cluster_id) <> ''),
+    CONSTRAINT ck_asset_observations_tenant_nonblank CHECK (tenant_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_asset_observations_cluster_nonblank CHECK (cluster_id ~ '[^[:space:]]'),
     CONSTRAINT ck_asset_observations_resource_uid_nonblank
-        CHECK (resource_uid IS NULL OR btrim(resource_uid) <> ''),
+        CHECK (resource_uid IS NULL OR resource_uid ~ '[^[:space:]]'),
+    CONSTRAINT ck_asset_observations_pod_uid_nonblank
+        CHECK (pod_uid IS NULL OR pod_uid ~ '[^[:space:]]'),
+    CONSTRAINT ck_asset_observations_pod_name_nonblank
+        CHECK (pod_name IS NULL OR pod_name ~ '[^[:space:]]'),
+    CONSTRAINT ck_asset_observations_ip_address_nonblank
+        CHECK (ip_address IS NULL OR ip_address ~ '[^[:space:]]'),
+    CONSTRAINT ck_asset_observations_dns_nonblank
+        CHECK (dns IS NULL OR dns ~ '[^[:space:]]'),
+    CONSTRAINT ck_asset_observations_banner_nonblank
+        CHECK (banner IS NULL OR banner ~ '[^[:space:]]'),
     CONSTRAINT ck_asset_observations_resource_kind CHECK (resource_kind = 'Deployment'),
     CONSTRAINT ck_asset_observations_policy_version CHECK (resolution_policy_version = 1),
     CONSTRAINT ck_asset_observations_labels_object
         CHECK (labels IS NULL OR jsonb_typeof(labels) = 'object'),
     CONSTRAINT ck_asset_observations_signal_present CHECK (
         pod_uid IS NOT NULL OR pod_name IS NOT NULL OR ip_address IS NOT NULL
-        OR dns IS NOT NULL OR labels IS NOT NULL OR banner IS NOT NULL),
+        OR dns IS NOT NULL OR (labels IS NOT NULL AND labels <> '{}'::jsonb)
+        OR banner IS NOT NULL),
     -- The MVP persists exactly two resolution states with fixed pairings.
     CONSTRAINT ck_asset_observations_resolution_pairing CHECK (
         (resolution_outcome = 'RESOLVED'
@@ -139,11 +150,13 @@ CREATE TABLE findings (
     CONSTRAINT fk_findings_asset
         FOREIGN KEY (tenant_id, canonical_asset_id)
         REFERENCES assets (tenant_id, canonical_asset_id),
-    CONSTRAINT ck_findings_tenant_nonblank CHECK (btrim(tenant_id) <> ''),
-    CONSTRAINT ck_findings_vuln_class_nonblank CHECK (btrim(vuln_class) <> ''),
-    CONSTRAINT ck_findings_location_nonblank CHECK (btrim(normalized_location_signature) <> ''),
-    CONSTRAINT ck_findings_verification_key_nonblank CHECK (btrim(verification_key) <> ''),
-    CONSTRAINT ck_findings_check_version_nonblank CHECK (btrim(check_version) <> ''),
+    CONSTRAINT ck_findings_tenant_nonblank CHECK (tenant_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_findings_vuln_class_nonblank CHECK (vuln_class ~ '[^[:space:]]'),
+    CONSTRAINT ck_findings_location_nonblank
+        CHECK (normalized_location_signature ~ '[^[:space:]]'),
+    CONSTRAINT ck_findings_verification_key_nonblank
+        CHECK (verification_key ~ '[^[:space:]]'),
+    CONSTRAINT ck_findings_check_version_nonblank CHECK (check_version ~ '[^[:space:]]'),
     CONSTRAINT ck_findings_match_key_version CHECK (match_key_version = 1),
     CONSTRAINT ck_findings_policy_version CHECK (compatibility_policy_version = 1),
     CONSTRAINT ck_findings_context_hash_hex CHECK (relevant_context_hash ~ '^[0-9a-f]{64}$')
@@ -160,7 +173,7 @@ CREATE TABLE finding_occurrences (
     CONSTRAINT fk_finding_occurrences_finding
         FOREIGN KEY (tenant_id, finding_id)
         REFERENCES findings (tenant_id, finding_id),
-    CONSTRAINT ck_finding_occurrences_tenant_nonblank CHECK (btrim(tenant_id) <> '')
+    CONSTRAINT ck_finding_occurrences_tenant_nonblank CHECK (tenant_id ~ '[^[:space:]]')
 );
 
 CREATE INDEX ix_finding_occurrences_finding ON finding_occurrences (tenant_id, finding_id);
@@ -182,9 +195,11 @@ CREATE TABLE test_attempts (
     CONSTRAINT fk_test_attempts_asset
         FOREIGN KEY (tenant_id, canonical_asset_id)
         REFERENCES assets (tenant_id, canonical_asset_id),
-    CONSTRAINT ck_test_attempts_tenant_nonblank CHECK (btrim(tenant_id) <> ''),
-    CONSTRAINT ck_test_attempts_verification_key_nonblank CHECK (btrim(verification_key) <> ''),
-    CONSTRAINT ck_test_attempts_check_version_nonblank CHECK (btrim(check_version) <> ''),
+    CONSTRAINT ck_test_attempts_tenant_nonblank CHECK (tenant_id ~ '[^[:space:]]'),
+    CONSTRAINT ck_test_attempts_verification_key_nonblank
+        CHECK (verification_key ~ '[^[:space:]]'),
+    CONSTRAINT ck_test_attempts_check_version_nonblank
+        CHECK (check_version ~ '[^[:space:]]'),
     CONSTRAINT ck_test_attempts_policy_version CHECK (compatibility_policy_version = 1),
     CONSTRAINT ck_test_attempts_context_hash_hex CHECK (relevant_context_hash ~ '^[0-9a-f]{64}$'),
     CONSTRAINT ck_test_attempts_execution_status CHECK (execution_status IN
