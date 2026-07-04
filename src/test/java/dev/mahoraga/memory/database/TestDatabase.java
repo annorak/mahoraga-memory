@@ -39,6 +39,11 @@ public final class TestDatabase {
 
   /** Creates the database if absent and returns its JDBC URL. */
   public static String ensureDatabase(String databaseName) throws SQLException {
+    // CREATE DATABASE cannot take a bind parameter, so the interpolated name
+    // is restricted to a safe identifier instead.
+    if (!databaseName.matches("[a-z][a-z0-9_]*")) {
+      throw new IllegalArgumentException("unsafe test database name: " + databaseName);
+    }
     try (Connection admin = adminConnection();
         PreparedStatement exists =
             admin.prepareStatement("SELECT 1 FROM pg_database WHERE datname = ?")) {

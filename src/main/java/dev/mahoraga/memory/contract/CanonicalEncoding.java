@@ -40,6 +40,8 @@ public final class CanonicalEncoding {
   /**
    * Numerically equal parameter values must share one canonical form, so
    * decimals are stripped and integral decimals become plain integers.
+   * Handling only BigDecimal is complete because SourceEventValidator's scalar
+   * whitelist admits no Double or Float; the two rules must evolve together.
    */
   public static Object canonicalScalar(Object value) {
     if (value instanceof BigDecimal decimal) {

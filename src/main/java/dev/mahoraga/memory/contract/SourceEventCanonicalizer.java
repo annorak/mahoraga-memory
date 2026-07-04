@@ -43,6 +43,16 @@ final class SourceEventCanonicalizer {
     }
   }
 
+  /** The canonical payload subtree alone; storage persists it verbatim. */
+  String canonicalPayloadJson(SourceEvent event) {
+    try {
+      return canonicalMapper.writeValueAsString(payloadMap(event.payload()));
+    } catch (JsonProcessingException e) {
+      throw new InvalidSourceEventException(
+          "canonicalization failed for source event " + event.sourceEventId(), e);
+    }
+  }
+
   private Map<String, Object> payloadMap(SourcePayload payload) {
     return switch (payload) {
       case AssetObservation asset -> assetMap(asset);

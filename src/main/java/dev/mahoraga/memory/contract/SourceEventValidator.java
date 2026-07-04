@@ -153,6 +153,9 @@ public final class SourceEventValidator {
     }
   }
 
+  // This whitelist also keeps CanonicalEncoding.canonicalScalar complete:
+  // floats only ever arrive as BigDecimal (never Double/Float), so extending
+  // it requires extending that normalization or fingerprints become unstable.
   private static boolean isJsonScalar(Object value) {
     return value instanceof String
         || value instanceof Boolean

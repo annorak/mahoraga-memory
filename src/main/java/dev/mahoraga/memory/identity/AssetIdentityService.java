@@ -2,6 +2,7 @@ package dev.mahoraga.memory.identity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.mahoraga.memory.contract.SourceEventValidator;
 import dev.mahoraga.memory.contract.SourcePayload.AssetObservation;
 import dev.mahoraga.memory.contract.TrustedContext;
 import jakarta.inject.Inject;
@@ -20,10 +21,12 @@ import org.jdbi.v3.core.Handle;
 public final class AssetIdentityService {
 
   public static final int RESOLUTION_POLICY_VERSION = 1;
+  public static final String RESOLVED_OUTCOME = "RESOLVED";
+  public static final String AMBIGUOUS_OUTCOME = "AMBIGUOUS";
   public static final String AUTHORITATIVE_BASIS = "AUTHORITATIVE_DEPLOYMENT_KEY";
   public static final String WEAK_COLLISION_BASIS = "WEAK_SIGNAL_COLLISION";
 
-  private static final String MVP_RESOURCE_KIND = "Deployment";
+  private static final String MVP_RESOURCE_KIND = SourceEventValidator.MVP_RESOURCE_KIND;
 
   private final ObjectMapper objectMapper;
 
@@ -88,7 +91,7 @@ public final class AssetIdentityService {
           resolveAuthoritativeDeployment(
               handle, context, sourceEventId, payload.clusterId(), payload.resourceUid());
       insertObservation(handle, context, sourceEventId, payload, assetId.value(),
-          "RESOLVED", AUTHORITATIVE_BASIS);
+          RESOLVED_OUTCOME, AUTHORITATIVE_BASIS);
       return new AssetResolution.Resolved(assetId);
     }
     if (!hasConfirmedWeakCandidate(handle, context, payload)) {
@@ -99,7 +102,7 @@ public final class AssetIdentityService {
               .formatted(sourceEventId, context.tenantId()));
     }
     insertObservation(handle, context, sourceEventId, payload, null,
-        "AMBIGUOUS", WEAK_COLLISION_BASIS);
+        AMBIGUOUS_OUTCOME, WEAK_COLLISION_BASIS);
     return new AssetResolution.Ambiguous();
   }
 

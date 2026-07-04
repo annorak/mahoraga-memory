@@ -58,7 +58,7 @@ class AssetIdentityServiceTest {
         .load()
         .migrate();
     jdbi = Jdbi.create(url, TestDatabase.username(), TestDatabase.password());
-    transaction = new IngestionTransaction(jdbi, new SourceEventInbox(MAPPER));
+    transaction = new IngestionTransaction(jdbi, new SourceEventInbox());
     service = new AssetIdentityService(MAPPER);
     codec = new SourceEventCodec(MAPPER, new SourceEventValidator(BaseValidator.newValidator()));
   }

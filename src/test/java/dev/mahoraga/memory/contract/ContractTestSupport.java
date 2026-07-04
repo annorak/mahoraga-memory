@@ -3,9 +3,9 @@ package dev.mahoraga.memory.contract;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.validation.BaseValidator;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
 
 /** Shared construction and resource loading for contract tests. */
 final class ContractTestSupport {
@@ -18,8 +18,12 @@ final class ContractTestSupport {
   }
 
   static String contract(String name) {
-    try {
-      return Files.readString(Path.of("src", "test", "resources", "contracts", name));
+    try (InputStream resource =
+        ContractTestSupport.class.getResourceAsStream("/contracts/" + name)) {
+      if (resource == null) {
+        throw new IllegalArgumentException("no contract resource named " + name);
+      }
+      return new String(resource.readAllBytes(), StandardCharsets.UTF_8);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }

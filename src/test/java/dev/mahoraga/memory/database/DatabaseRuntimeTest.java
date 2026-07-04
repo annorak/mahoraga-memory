@@ -15,11 +15,14 @@ import io.dropwizard.lifecycle.JettyManaged;
 import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.DropwizardTestSupport;
 import io.dropwizard.testing.ResourceHelpers;
+import io.dropwizard.validation.BaseValidator;
+import jakarta.validation.ConstraintViolation;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.Test;
 
@@ -87,14 +90,25 @@ class DatabaseRuntimeTest {
 
   @Test
   void unavailableDatabaseFailsStartupWithinConfiguredBound() {
+    // TEST-NET-1 (RFC 5737) is unroutable, so this exercises the configured
+    // connect timeout rather than an instant local connection refusal.
     DropwizardTestSupport<MahoragaConfiguration> support =
-        support("jdbc:postgresql://localhost:1/unreachable");
+        support("jdbc:postgresql://192.0.2.1:5432/unreachable");
     long startedAt = System.currentTimeMillis();
     assertThrows(Exception.class, support::before);
     long elapsedMillis = System.currentTimeMillis() - startedAt;
     assertTrue(
         elapsedMillis < 15_000,
         "startup failure took " + elapsedMillis + "ms; expected a bounded fast failure");
+  }
+
+  @Test
+  void missingDatabaseBlockFailsConfigurationValidation() {
+    Set<ConstraintViolation<MahoragaConfiguration>> violations =
+        BaseValidator.newValidator().validate(new MahoragaConfiguration());
+
+    assertEquals(1, violations.size(), "a configuration without a database block must not validate");
+    assertEquals("database", violations.iterator().next().getPropertyPath().toString());
   }
 
   @Test

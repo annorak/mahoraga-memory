@@ -9,7 +9,9 @@ import jakarta.validation.constraints.NotNull;
 /** Application configuration. */
 public class MahoragaConfiguration extends Configuration {
 
-  @Valid @NotNull private DataSourceFactory database = new DataSourceFactory();
+  // No default instance: a configuration file without a database block must
+  // fail validation at startup, not at first pool use.
+  @Valid @NotNull private DataSourceFactory database;
 
   @JsonProperty("database")
   public DataSourceFactory getDatabase() {

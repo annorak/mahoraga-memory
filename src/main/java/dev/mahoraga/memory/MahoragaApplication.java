@@ -52,8 +52,10 @@ public class MahoragaApplication extends Application<MahoragaConfiguration> {
               new MahoragaModule(
                   configuration, environment.getObjectMapper(), environment.getValidator(), jdbi));
     } catch (Exception startupFailure) {
-      // Dropwizard has not started the lifecycle yet, so the pool must be
-      // closed here or an aborted bootstrap leaks its connections.
+      // Dropwizard has not started the lifecycle yet (JdbiFactory registers
+      // the pool with it, but nothing is running), so this manual stop is the
+      // only cleanup path; an aborted bootstrap would otherwise leak its
+      // connections.
       closeQuietly(dataSource, startupFailure);
       throw startupFailure;
     }

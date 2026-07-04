@@ -56,7 +56,7 @@ class FindingIdentityServiceTest {
         .load()
         .migrate();
     jdbi = Jdbi.create(url, TestDatabase.username(), TestDatabase.password());
-    transaction = new IngestionTransaction(jdbi, new SourceEventInbox(MAPPER));
+    transaction = new IngestionTransaction(jdbi, new SourceEventInbox());
     service = new FindingIdentityService(new AssetIdentityService(MAPPER));
     codec = new SourceEventCodec(MAPPER, new SourceEventValidator(BaseValidator.newValidator()));
   }

@@ -1,13 +1,9 @@
 package dev.mahoraga.memory.ingest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mahoraga.memory.contract.CanonicalSourceEvent;
 import dev.mahoraga.memory.contract.SourceEvent;
 import dev.mahoraga.memory.contract.TrustedContext;
-import jakarta.inject.Inject;
-import java.io.IOException;
 import java.time.ZoneOffset;
-import java.util.Objects;
 import java.util.Optional;
 import org.jdbi.v3.core.Handle;
 
@@ -28,13 +24,6 @@ public final class SourceEventInbox {
 
   /** The tenant and engagement a stream is durably bound to. */
   record StreamOwner(String tenantId, String engagementId) {}
-
-  private final ObjectMapper objectMapper;
-
-  @Inject
-  public SourceEventInbox(ObjectMapper objectMapper) {
-    this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
-  }
 
   void insertEngagementIfAbsent(Handle handle, TrustedContext context, String sourceStreamId) {
     handle
@@ -123,21 +112,8 @@ public final class SourceEventInbox {
         .bind("sourceSequence", event.sourceSequence())
         .bind("schemaVersion", event.schemaVersion())
         .bind("occurredAt", event.occurredAt().atOffset(ZoneOffset.UTC))
-        .bind("payload", payloadJson(canonical))
+        .bind("payload", canonical.canonicalPayloadJson())
         .bind("canonicalSourceHash", canonical.canonicalSourceHash())
         .execute();
-  }
-
-  /**
-   * The payload subtree of the already-canonical bytes, so the stored JSON has
-   * exactly one serialization source of truth.
-   */
-  private String payloadJson(CanonicalSourceEvent canonical) {
-    try {
-      return objectMapper.readTree(canonical.canonicalJson()).get("payload").toString();
-    } catch (IOException e) {
-      throw new IllegalStateException(
-          "canonical JSON is unreadable for source event " + canonical.event().sourceEventId(), e);
-    }
   }
 }

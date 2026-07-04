@@ -47,7 +47,7 @@ class IngestionTransactionTest {
         .load()
         .migrate();
     jdbi = Jdbi.create(url, TestDatabase.username(), TestDatabase.password());
-    transaction = new IngestionTransaction(jdbi, new SourceEventInbox(Jackson.newObjectMapper()));
+    transaction = new IngestionTransaction(jdbi, new SourceEventInbox());
     codec =
         new SourceEventCodec(
             Jackson.newObjectMapper(), new SourceEventValidator(BaseValidator.newValidator()));
@@ -264,7 +264,7 @@ class IngestionTransactionTest {
                 TestDatabase.urlFor("ingest_inbox"),
                 TestDatabase.username(),
                 TestDatabase.password()),
-            new SourceEventInbox(Jackson.newObjectMapper()));
+            new SourceEventInbox());
 
     assertEquals(
         IngestResult.NO_OP,
@@ -278,6 +278,57 @@ class IngestionTransactionTest {
                     event("evt-restart-1", "stream-restart", 1, "2027-06-30T00:00:00Z"),
                     handle -> fail("no work")));
     assertEquals(Reason.EVENT_CONTENT, conflict.reason());
+  }
+
+  @Test
+  void storedPayloadPreservesHighPrecisionDecimalParametersExactly() {
+    TrustedContext context = new TrustedContext("t-decimal", "eng-1");
+    // More precision than a double can represent: any lossy re-serialization
+    // between the hashed canonical bytes and the stored payload rounds it.
+    String decimal = "0.12345678901234567890123";
+    String json =
+        """
+        {
+          "source_event_id": "evt-decimal-1",
+          "event_type": "finding_observation",
+          "source_stream_id": "stream-decimal",
+          "source_sequence": 1,
+          "schema_version": 1,
+          "occurred_at": "2026-01-01T10:00:00Z",
+          "payload": {
+            "cluster_id": "cluster-demo",
+            "resource_kind": "Deployment",
+            "resource_uid": "deploy-uid-1",
+            "vuln_class": "xss",
+            "normalized_location_signature": "route:/login",
+            "verification_key": "check-1",
+            "check_version": "1.0",
+            "relevant_context": {
+              "protocol": "https",
+              "port": 443,
+              "normalized_route": "/login",
+              "parameters": {"threshold": %s},
+              "is_address_bound": false
+            },
+            "compatibility_policy_version": 1
+          }
+        }
+        """
+            .formatted(decimal);
+
+    assertEquals(IngestResult.ACCEPTED, transaction.ingest(context, decode(json), handle -> {}));
+
+    String stored =
+        jdbi.withHandle(
+            handle ->
+                handle
+                    .createQuery(
+                        "SELECT payload#>>'{relevant_context,parameters,threshold}'"
+                            + " FROM source_events WHERE tenant_id = 't-decimal'"
+                            + " AND source_event_id = 'evt-decimal-1'")
+                    .mapTo(String.class)
+                    .one());
+    assertEquals(decimal, stored);
   }
 
   @Test

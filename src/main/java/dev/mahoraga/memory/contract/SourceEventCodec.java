@@ -50,7 +50,11 @@ public final class SourceEventCodec {
     SourceEvent event = toSourceEvent(parseEnvelope(inputBytes));
     validator.validate(event);
     byte[] canonicalJson = canonicalizer.canonicalBytes(event);
-    return new CanonicalSourceEvent(event, canonicalJson, CanonicalEncoding.sha256Hex(canonicalJson));
+    return new CanonicalSourceEvent(
+        event,
+        canonicalJson,
+        CanonicalEncoding.sha256Hex(canonicalJson),
+        canonicalizer.canonicalPayloadJson(event));
   }
 
   private RawEnvelope parseEnvelope(byte[] inputBytes) {
