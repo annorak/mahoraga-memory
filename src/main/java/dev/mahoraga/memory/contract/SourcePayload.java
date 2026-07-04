@@ -85,7 +85,7 @@ public sealed interface SourcePayload {
     }
 
     @JsonCreator
-    static ExecutionStatus fromWire(String value) {
+    public static ExecutionStatus fromWire(String value) {
       for (ExecutionStatus status : values()) {
         if (status.wireValue.equals(value)) {
           return status;
@@ -113,7 +113,7 @@ public sealed interface SourcePayload {
     }
 
     @JsonCreator
-    static TestResult fromWire(String value) {
+    public static TestResult fromWire(String value) {
       for (TestResult result : values()) {
         if (result.wireValue.equals(value)) {
           return result;

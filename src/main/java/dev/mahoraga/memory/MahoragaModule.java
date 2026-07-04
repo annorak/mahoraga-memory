@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import dev.mahoraga.memory.contract.SourceEventCodec;
 import dev.mahoraga.memory.contract.SourceEventValidator;
+import dev.mahoraga.memory.coverage.TestAttemptService;
 import dev.mahoraga.memory.finding.FindingIdentityService;
 import dev.mahoraga.memory.identity.AssetIdentityService;
 import dev.mahoraga.memory.ingest.IngestionTransaction;
@@ -48,5 +49,6 @@ public final class MahoragaModule extends AbstractModule {
     bind(IngestionTransaction.class);
     bind(AssetIdentityService.class);
     bind(FindingIdentityService.class);
+    bind(TestAttemptService.class);
   }
 }
