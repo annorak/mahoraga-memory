@@ -15,11 +15,8 @@ import com.fasterxml.jackson.databind.type.LogicalType;
 import jakarta.inject.Inject;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.HexFormat;
 import java.util.Objects;
 
 /**
@@ -53,7 +50,7 @@ public final class SourceEventCodec {
     SourceEvent event = toSourceEvent(parseEnvelope(inputBytes));
     validator.validate(event);
     byte[] canonicalJson = canonicalizer.canonicalBytes(event);
-    return new CanonicalSourceEvent(event, canonicalJson, sha256Hex(canonicalJson));
+    return new CanonicalSourceEvent(event, canonicalJson, CanonicalEncoding.sha256Hex(canonicalJson));
   }
 
   private RawEnvelope parseEnvelope(byte[] inputBytes) {
@@ -138,14 +135,6 @@ public final class SourceEventCodec {
         .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
         .setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail);
     return copy;
-  }
-
-  private static String sha256Hex(byte[] bytes) {
-    try {
-      return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
-    } catch (NoSuchAlgorithmException e) {
-      throw new IllegalStateException("SHA-256 is unavailable", e);
-    }
   }
 
   private static String requireField(String value, String field, String eventId) {

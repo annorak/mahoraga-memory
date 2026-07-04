@@ -6,7 +6,6 @@ import dev.mahoraga.memory.contract.SourcePayload.AssetObservation;
 import dev.mahoraga.memory.contract.SourcePayload.EngagementCompleted;
 import dev.mahoraga.memory.contract.SourcePayload.FindingObservation;
 import dev.mahoraga.memory.contract.SourcePayload.TestAttempt;
-import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -111,31 +110,11 @@ final class SourceEventCanonicalizer {
     map.put("port", context.port());
     map.put("normalized_route", context.normalizedRoute());
     if (context.parameters() != null) {
-      map.put("parameters", canonicalParameters(context.parameters()));
+      map.put("parameters", CanonicalEncoding.canonicalParameters(context.parameters()));
     }
     putIfPresent(map, "target_address", context.targetAddress());
     map.put("is_address_bound", context.isAddressBound());
     return map;
-  }
-
-  private Map<String, Object> canonicalParameters(Map<String, Object> parameters) {
-    Map<String, Object> map = new TreeMap<>();
-    for (Map.Entry<String, Object> parameter : parameters.entrySet()) {
-      map.put(parameter.getKey(), canonicalScalar(parameter.getValue()));
-    }
-    return map;
-  }
-
-  /**
-   * Numerically equal parameter values must share one canonical form, so
-   * decimals are stripped and integral decimals become plain integers.
-   */
-  private static Object canonicalScalar(Object value) {
-    if (value instanceof BigDecimal decimal) {
-      BigDecimal stripped = decimal.stripTrailingZeros();
-      return stripped.scale() <= 0 ? stripped.toBigIntegerExact() : stripped;
-    }
-    return value;
   }
 
   private static void putIfPresent(Map<String, Object> map, String key, String value) {
