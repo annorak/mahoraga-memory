@@ -10,3 +10,15 @@ logging:
   level: WARN
   appenders:
     - type: console
+
+# Connection values are placeholders; each test overrides them with its
+# Testcontainers PostgreSQL coordinates through ConfigOverride.
+database:
+  driverClass: org.postgresql.Driver
+  url: jdbc:postgresql://localhost:1/overridden-by-tests
+  user: overridden-by-tests
+  password: overridden-by-tests
+  maxWaitForConnection: 3s
+  validationQueryTimeout: 3s
+  properties:
+    connectTimeout: "5"

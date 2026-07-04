@@ -6,6 +6,7 @@ import dev.mahoraga.memory.contract.SourceEventCodec;
 import dev.mahoraga.memory.contract.SourceEventValidator;
 import jakarta.validation.Validator;
 import java.util.Objects;
+import org.jdbi.v3.core.Jdbi;
 
 /** The single explicit Guice root module for the application. */
 public final class MahoragaModule extends AbstractModule {
@@ -13,12 +14,17 @@ public final class MahoragaModule extends AbstractModule {
   private final MahoragaConfiguration configuration;
   private final ObjectMapper objectMapper;
   private final Validator validator;
+  private final Jdbi jdbi;
 
   public MahoragaModule(
-      MahoragaConfiguration configuration, ObjectMapper objectMapper, Validator validator) {
+      MahoragaConfiguration configuration,
+      ObjectMapper objectMapper,
+      Validator validator,
+      Jdbi jdbi) {
     this.configuration = Objects.requireNonNull(configuration, "configuration");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
     this.validator = Objects.requireNonNull(validator, "validator");
+    this.jdbi = Objects.requireNonNull(jdbi, "jdbi");
   }
 
   @Override
@@ -29,6 +35,9 @@ public final class MahoragaModule extends AbstractModule {
     bind(MahoragaConfiguration.class).toInstance(configuration);
     bind(ObjectMapper.class).toInstance(objectMapper);
     bind(Validator.class).toInstance(validator);
+    // The Jdbi instance is built by the application over the one managed data
+    // source; consumers open scoped handles and transactions from it.
+    bind(Jdbi.class).toInstance(jdbi);
     bind(SourceEventValidator.class);
     bind(SourceEventCodec.class);
   }
