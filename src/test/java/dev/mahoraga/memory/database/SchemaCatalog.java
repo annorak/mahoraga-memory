@@ -182,9 +182,11 @@ final class SchemaCatalog {
       """
       SELECT c.conname
       FROM pg_constraint c
+      JOIN pg_class r ON r.oid = c.conrelid
       JOIN pg_namespace n ON n.oid = c.connamespace
       WHERE n.nspname = 'public'
         AND c.contype IN ('p', 'u', 'f', 'c')
+        AND r.relname <> 'flyway_schema_history'
       """;
 
   private static final String FOREIGN_KEY_QUERY =

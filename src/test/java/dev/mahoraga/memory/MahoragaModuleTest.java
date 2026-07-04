@@ -13,9 +13,15 @@ import dev.mahoraga.memory.contract.SourceEventCodec;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.validation.BaseValidator;
 import jakarta.validation.Validator;
+import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.Test;
 
 class MahoragaModuleTest {
+
+  // Jdbi.create opens no connection, so the module stays unit-testable without
+  // a database.
+  private static final Jdbi JDBI =
+      Jdbi.create("jdbc:postgresql://localhost:1/module-test", "unused", "unused");
 
   @Test
   void createsInjectorAndResolvesBoundInstances() {
@@ -23,11 +29,12 @@ class MahoragaModuleTest {
     ObjectMapper objectMapper = Jackson.newObjectMapper();
     Validator validator = BaseValidator.newValidator();
     Injector injector =
-        Guice.createInjector(new MahoragaModule(configuration, objectMapper, validator));
+        Guice.createInjector(new MahoragaModule(configuration, objectMapper, validator, JDBI));
 
     assertSame(configuration, injector.getInstance(MahoragaConfiguration.class));
     assertSame(objectMapper, injector.getInstance(ObjectMapper.class));
     assertSame(validator, injector.getInstance(Validator.class));
+    assertSame(JDBI, injector.getInstance(Jdbi.class));
     assertNotNull(injector.getInstance(SourceEventCodec.class));
   }
 
@@ -50,7 +57,10 @@ class MahoragaModuleTest {
   private static Injector newInjector() {
     return Guice.createInjector(
         new MahoragaModule(
-            new MahoragaConfiguration(), Jackson.newObjectMapper(), BaseValidator.newValidator()));
+            new MahoragaConfiguration(),
+            Jackson.newObjectMapper(),
+            BaseValidator.newValidator(),
+            JDBI));
   }
 
   /** Constructable without configuration, so only explicit-binding enforcement rejects it. */

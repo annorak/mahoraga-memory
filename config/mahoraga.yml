@@ -11,3 +11,15 @@ logging:
   appenders:
     - type: console
       logFormat: "%d{ISO8601} %-5level [%logger{36}] %msg%n"
+
+database:
+  driverClass: org.postgresql.Driver
+  url: ${MAHORAGA_DB_URL}
+  user: ${MAHORAGA_DB_USER}
+  password: ${MAHORAGA_DB_PASSWORD}
+  maxWaitForConnection: 10s
+  validationQueryTimeout: 5s
+  properties:
+    # TCP connect timeout in seconds; bounds startup failure when the database
+    # is unreachable.
+    connectTimeout: "10"
