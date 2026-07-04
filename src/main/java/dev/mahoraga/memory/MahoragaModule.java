@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import dev.mahoraga.memory.contract.SourceEventCodec;
 import dev.mahoraga.memory.contract.SourceEventValidator;
+import dev.mahoraga.memory.ingest.IngestionTransaction;
+import dev.mahoraga.memory.ingest.SourceEventInbox;
 import jakarta.validation.Validator;
 import java.util.Objects;
 import org.jdbi.v3.core.Jdbi;
@@ -40,5 +42,7 @@ public final class MahoragaModule extends AbstractModule {
     bind(Jdbi.class).toInstance(jdbi);
     bind(SourceEventValidator.class);
     bind(SourceEventCodec.class);
+    bind(SourceEventInbox.class);
+    bind(IngestionTransaction.class);
   }
 }
