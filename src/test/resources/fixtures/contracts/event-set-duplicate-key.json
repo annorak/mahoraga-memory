@@ -1,0 +1,23 @@
+{
+  "trusted_context": {
+    "tenant_id": "tenant-demo",
+    "engagement_id": "engagement-2"
+  },
+  "events": [
+    {
+      "source_event_id": "evt-asset",
+      "event_type": "asset_observation",
+      "source_stream_id": "stream-e2",
+      "source_sequence": 1,
+      "schema_version": 1,
+      "occurred_at": "2026-06-01T10:00:00Z",
+      "payload": {
+        "cluster_id": "cluster-1",
+        "cluster_id": "cluster-2",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-shared",
+        "pod_uid": "pod-uid-1"
+      }
+    }
+  ]
+}
