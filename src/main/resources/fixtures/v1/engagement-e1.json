@@ -1,0 +1,180 @@
+{
+  "trusted_context": {
+    "tenant_id": "tenant-acme",
+    "engagement_id": "engagement-1"
+  },
+  "events": [
+    {
+      "source_event_id": "e1-asset",
+      "event_type": "asset_observation",
+      "source_stream_id": "stream-e1",
+      "source_sequence": 1,
+      "schema_version": 1,
+      "occurred_at": "2026-03-01T09:00:00Z",
+      "payload": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web",
+        "pod_uid": "pod-e1",
+        "pod_name": "web-6d8f-e1",
+        "ip_address": "10.1.0.5",
+        "dns": "web.prod.svc.cluster.local"
+      }
+    },
+    {
+      "source_event_id": "e1-still",
+      "event_type": "finding_observation",
+      "source_stream_id": "stream-e1",
+      "source_sequence": 2,
+      "schema_version": 1,
+      "occurred_at": "2026-03-01T09:01:00Z",
+      "payload": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web",
+        "vuln_class": "sql_injection",
+        "normalized_location_signature": "sig-login-sqli",
+        "verification_key": "check-login-sqli",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "https",
+          "port": 443,
+          "normalized_route": "/login",
+          "is_address_bound": false
+        },
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "e1-fixed",
+      "event_type": "finding_observation",
+      "source_stream_id": "stream-e1",
+      "source_sequence": 3,
+      "schema_version": 1,
+      "occurred_at": "2026-03-01T09:02:00Z",
+      "payload": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web",
+        "vuln_class": "xss",
+        "normalized_location_signature": "sig-search-xss",
+        "verification_key": "check-search-xss",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "https",
+          "port": 443,
+          "normalized_route": "/search",
+          "is_address_bound": false
+        },
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "e1-regress",
+      "event_type": "finding_observation",
+      "source_stream_id": "stream-e1",
+      "source_sequence": 4,
+      "schema_version": 1,
+      "occurred_at": "2026-03-01T09:03:00Z",
+      "payload": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web",
+        "vuln_class": "broken_authz",
+        "normalized_location_signature": "sig-admin-authz",
+        "verification_key": "check-admin-authz",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "https",
+          "port": 443,
+          "normalized_route": "/admin",
+          "is_address_bound": false
+        },
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "e1-untested",
+      "event_type": "finding_observation",
+      "source_stream_id": "stream-e1",
+      "source_sequence": 5,
+      "schema_version": 1,
+      "occurred_at": "2026-03-01T09:04:00Z",
+      "payload": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web",
+        "vuln_class": "rce",
+        "normalized_location_signature": "sig-upload-rce",
+        "verification_key": "check-upload-rce",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "https",
+          "port": 443,
+          "normalized_route": "/upload",
+          "is_address_bound": false
+        },
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "e1-incon",
+      "event_type": "finding_observation",
+      "source_stream_id": "stream-e1",
+      "source_sequence": 6,
+      "schema_version": 1,
+      "occurred_at": "2026-03-01T09:05:00Z",
+      "payload": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web",
+        "vuln_class": "ssrf",
+        "normalized_location_signature": "sig-api-ssrf",
+        "verification_key": "check-api-ssrf",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "https",
+          "port": 443,
+          "normalized_route": "/api/data",
+          "is_address_bound": false
+        },
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "e1-regress-neg",
+      "event_type": "test_attempt",
+      "source_stream_id": "stream-e1",
+      "source_sequence": 7,
+      "schema_version": 1,
+      "occurred_at": "2026-03-01T09:06:00Z",
+      "payload": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web",
+        "verification_key": "check-admin-authz",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "https",
+          "port": 443,
+          "normalized_route": "/admin",
+          "is_address_bound": false
+        },
+        "execution_status": "completed",
+        "result": "not_detected",
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "e1-marker",
+      "event_type": "engagement_completed",
+      "source_stream_id": "stream-e1",
+      "source_sequence": 8,
+      "schema_version": 1,
+      "occurred_at": "2026-03-01T09:07:00Z",
+      "payload": {
+        "last_data_sequence": 7
+      }
+    }
+  ]
+}

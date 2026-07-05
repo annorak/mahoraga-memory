@@ -1,0 +1,19 @@
+{
+  "trusted_context": {
+    "tenant_id": "tenant-acme",
+    "engagement_id": "engagement-2"
+  },
+  "events": [
+    {
+      "source_event_id": "e2-marker",
+      "event_type": "engagement_completed",
+      "source_stream_id": "stream-e2",
+      "source_sequence": 10,
+      "schema_version": 1,
+      "occurred_at": "2026-06-01T09:09:00Z",
+      "payload": {
+        "last_data_sequence": 9
+      }
+    }
+  ]
+}

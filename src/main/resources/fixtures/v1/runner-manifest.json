@@ -1,0 +1,60 @@
+{
+  "action_budget": 3,
+  "candidates": [
+    {
+      "candidate_id": "T-A",
+      "scenario_label": "F-STILL",
+      "target": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web"
+      },
+      "verification_key": "check-login-sqli",
+      "action_event_ids": ["e2-still", "e2-still-detect"],
+      "frozen_outcome": {
+        "execution_status": "completed",
+        "result": "detected"
+      }
+    },
+    {
+      "candidate_id": "T-B",
+      "scenario_label": "F-FIXED",
+      "target": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web"
+      },
+      "verification_key": "check-search-xss",
+      "action_event_ids": ["e2-fixed-neg"],
+      "frozen_outcome": {
+        "execution_status": "completed",
+        "result": "not_detected"
+      }
+    },
+    {
+      "candidate_id": "T-C",
+      "scenario_label": "F-REGRESS",
+      "target": {
+        "cluster_id": "cluster-prod",
+        "resource_kind": "Deployment",
+        "resource_uid": "deploy-web"
+      },
+      "verification_key": "check-admin-authz",
+      "action_event_ids": ["e2-regress", "e2-regress-detect"],
+      "frozen_outcome": {
+        "execution_status": "completed",
+        "result": "detected"
+      }
+    }
+  ],
+  "background": [
+    {
+      "event_id": "e2-incon-partial",
+      "scenario_label": "F-INCONCLUSIVE"
+    },
+    {
+      "event_id": "e2-new",
+      "scenario_label": "F-NEW"
+    }
+  ]
+}
