@@ -1,0 +1,46 @@
+package dev.mahoraga.memory.fixture;
+
+import dev.mahoraga.memory.contract.TrustedContext;
+import dev.mahoraga.memory.fixture.RunnerManifest.RunnerCandidate;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * The only fixture type the planner is permitted to see. It exposes, by
+ * construction, the trusted tenant, an action budget, and for each opaque
+ * candidate its authoritative Deployment target and verification key. It holds
+ * no scenario label, frozen outcome, source-event reference, classification, or
+ * E2 fact, so no runner knowledge or future result can reach planning through
+ * it. It is produced only by projecting a {@link RunnerManifest}; the planner
+ * never receives the manifest itself.
+ */
+public record PlannerCandidateSet(
+    String tenantId, int actionBudget, List<PlannerCandidate> candidates) {
+
+  public PlannerCandidateSet {
+    Objects.requireNonNull(tenantId, "tenantId");
+    candidates = List.copyOf(candidates);
+  }
+
+  /** One opaque candidate with just the target and verification key the planner may use. */
+  public record PlannerCandidate(
+      String candidateId, DeploymentTarget target, String verificationKey) {}
+
+  /**
+   * Projects the runner manifest onto the planner-safe fields under the trusted
+   * tenant. Reads only the target and verification key of each candidate, so a
+   * label or outcome cannot cross this boundary even if the manifest gains one.
+   */
+  public static PlannerCandidateSet from(TrustedContext context, RunnerManifest manifest) {
+    Objects.requireNonNull(context, "context");
+    Objects.requireNonNull(manifest, "manifest");
+    List<PlannerCandidate> projected =
+        manifest.candidates().stream().map(PlannerCandidateSet::project).toList();
+    return new PlannerCandidateSet(context.tenantId(), manifest.actionBudget(), projected);
+  }
+
+  private static PlannerCandidate project(RunnerCandidate candidate) {
+    return new PlannerCandidate(
+        candidate.candidateId(), candidate.target(), candidate.verificationKey());
+  }
+}

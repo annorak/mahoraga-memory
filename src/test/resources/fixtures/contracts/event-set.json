@@ -1,0 +1,142 @@
+{
+  "trusted_context": {
+    "tenant_id": "tenant-demo",
+    "engagement_id": "engagement-2"
+  },
+  "events": [
+    {
+      "source_event_id": "evt-asset",
+      "event_type": "asset_observation",
+      "source_stream_id": "stream-e2",
+      "source_sequence": 1,
+      "schema_version": 1,
+      "occurred_at": "2026-06-01T10:00:00Z",
+      "payload": {
+        "cluster_id": "cluster-1",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-shared",
+        "pod_uid": "pod-uid-1",
+        "ip_address": "10.0.0.21"
+      }
+    },
+    {
+      "source_event_id": "evt-action-a",
+      "event_type": "test_attempt",
+      "source_stream_id": "stream-e2",
+      "source_sequence": 2,
+      "schema_version": 1,
+      "occurred_at": "2026-06-01T10:05:00Z",
+      "payload": {
+        "cluster_id": "cluster-1",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-shared",
+        "verification_key": "vk-alpha",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "http",
+          "port": 8443,
+          "normalized_route": "/api/items",
+          "is_address_bound": false
+        },
+        "execution_status": "completed",
+        "result": "detected",
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "evt-action-b",
+      "event_type": "test_attempt",
+      "source_stream_id": "stream-e2",
+      "source_sequence": 3,
+      "schema_version": 1,
+      "occurred_at": "2026-06-01T10:06:00Z",
+      "payload": {
+        "cluster_id": "cluster-1",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-shared",
+        "verification_key": "vk-bravo",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "http",
+          "port": 8443,
+          "normalized_route": "/api/login",
+          "is_address_bound": false
+        },
+        "execution_status": "completed",
+        "result": "not_detected",
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "evt-action-c",
+      "event_type": "test_attempt",
+      "source_stream_id": "stream-e2",
+      "source_sequence": 4,
+      "schema_version": 1,
+      "occurred_at": "2026-06-01T10:07:00Z",
+      "payload": {
+        "cluster_id": "cluster-1",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-shared",
+        "verification_key": "vk-charlie",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "http",
+          "port": 8443,
+          "normalized_route": "/api/report",
+          "is_address_bound": false
+        },
+        "execution_status": "completed",
+        "result": "detected",
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "evt-bg-new",
+      "event_type": "finding_observation",
+      "source_stream_id": "stream-e2",
+      "source_sequence": 5,
+      "schema_version": 1,
+      "occurred_at": "2026-06-01T10:08:00Z",
+      "payload": {
+        "cluster_id": "cluster-1",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-shared",
+        "vuln_class": "sql_injection",
+        "normalized_location_signature": "sig-new-injection",
+        "verification_key": "vk-delta",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "http",
+          "port": 8443,
+          "normalized_route": "/api/search",
+          "is_address_bound": false
+        },
+        "compatibility_policy_version": 1
+      }
+    },
+    {
+      "source_event_id": "evt-bg-incon",
+      "event_type": "test_attempt",
+      "source_stream_id": "stream-e2",
+      "source_sequence": 6,
+      "schema_version": 1,
+      "occurred_at": "2026-06-01T10:09:00Z",
+      "payload": {
+        "cluster_id": "cluster-1",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-shared",
+        "verification_key": "vk-echo",
+        "check_version": "1.0.0",
+        "relevant_context": {
+          "protocol": "http",
+          "port": 8443,
+          "normalized_route": "/api/export",
+          "is_address_bound": false
+        },
+        "execution_status": "partial",
+        "compatibility_policy_version": 1
+      }
+    }
+  ]
+}

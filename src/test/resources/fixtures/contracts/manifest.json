@@ -1,0 +1,60 @@
+{
+  "action_budget": 3,
+  "candidates": [
+    {
+      "candidate_id": "T-A",
+      "scenario_label": "F-STILL",
+      "target": {
+        "cluster_id": "cluster-1",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-a"
+      },
+      "verification_key": "vk-alpha",
+      "action_event_ids": ["evt-action-a"],
+      "frozen_outcome": {
+        "execution_status": "completed",
+        "result": "detected"
+      }
+    },
+    {
+      "candidate_id": "T-B",
+      "scenario_label": "F-FIXED",
+      "target": {
+        "cluster_id": "cluster-1",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-b"
+      },
+      "verification_key": "vk-bravo",
+      "action_event_ids": ["evt-action-b"],
+      "frozen_outcome": {
+        "execution_status": "completed",
+        "result": "not_detected"
+      }
+    },
+    {
+      "candidate_id": "T-C",
+      "scenario_label": "F-REGRESS",
+      "target": {
+        "cluster_id": "cluster-1",
+        "resource_kind": "Deployment",
+        "resource_uid": "uid-c"
+      },
+      "verification_key": "vk-charlie",
+      "action_event_ids": ["evt-action-c"],
+      "frozen_outcome": {
+        "execution_status": "completed",
+        "result": "detected"
+      }
+    }
+  ],
+  "background": [
+    {
+      "event_id": "evt-bg-new",
+      "scenario_label": "F-NEW"
+    },
+    {
+      "event_id": "evt-bg-incon",
+      "scenario_label": "F-INCONCLUSIVE"
+    }
+  ]
+}
