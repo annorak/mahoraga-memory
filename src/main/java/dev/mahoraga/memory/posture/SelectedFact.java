@@ -11,7 +11,7 @@ import java.util.UUID;
  * lineage the fold orders by ({@code occurredAt} is the validated effective
  * time; stream and sequence are the deterministic tie-breakers) plus the
  * semantic identity and coverage fields folding and reporting require.
- * Operational {@code recorded_at}, raw payloads, and fixture vocabulary are
+ * Operational recorded time, raw payloads, and fixture vocabulary are
  * deliberately absent.
  */
 public sealed interface SelectedFact {
