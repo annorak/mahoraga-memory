@@ -88,6 +88,12 @@ public final class IngestorTestSupport {
   }
 
   public CanonicalSourceEvent attemptEvent(String eventId, String streamId, long sequence) {
+    return attemptEvent(eventId, streamId, sequence, OCCURRED_AT);
+  }
+
+  /** Variant with an explicit occurred_at for backdated-chronology cases. */
+  public CanonicalSourceEvent attemptEvent(
+      String eventId, String streamId, long sequence, String occurredAt) {
     Map<String, Object> payload = new LinkedHashMap<>();
     payload.put("cluster_id", "cluster-demo");
     payload.put("resource_kind", "Deployment");
@@ -98,7 +104,7 @@ public final class IngestorTestSupport {
     payload.put("execution_status", "completed");
     payload.put("result", "not_detected");
     payload.put("compatibility_policy_version", 1);
-    return decode(envelope(eventId, "test_attempt", streamId, sequence, payload));
+    return decode(envelope(eventId, "test_attempt", streamId, sequence, occurredAt, payload));
   }
 
   /** A valid marker sits at {@code lastDataSequence + 1} by the contract rule. */
@@ -168,13 +174,19 @@ public final class IngestorTestSupport {
   private static Map<String, Object> envelope(
       String eventId, String eventType, String streamId, long sequence,
       Map<String, Object> payload) {
+    return envelope(eventId, eventType, streamId, sequence, OCCURRED_AT, payload);
+  }
+
+  private static Map<String, Object> envelope(
+      String eventId, String eventType, String streamId, long sequence, String occurredAt,
+      Map<String, Object> payload) {
     Map<String, Object> envelope = new LinkedHashMap<>();
     envelope.put("source_event_id", eventId);
     envelope.put("event_type", eventType);
     envelope.put("source_stream_id", streamId);
     envelope.put("source_sequence", sequence);
     envelope.put("schema_version", 1);
-    envelope.put("occurred_at", OCCURRED_AT);
+    envelope.put("occurred_at", occurredAt);
     envelope.put("payload", payload);
     return envelope;
   }
