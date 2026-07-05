@@ -2,6 +2,7 @@ package dev.mahoraga.memory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
+import dev.mahoraga.memory.boundary.EngagementCompletionHandler;
 import dev.mahoraga.memory.contract.SourceEventCodec;
 import dev.mahoraga.memory.contract.SourceEventValidator;
 import dev.mahoraga.memory.coverage.TestAttemptService;
@@ -9,6 +10,7 @@ import dev.mahoraga.memory.finding.FindingIdentityService;
 import dev.mahoraga.memory.identity.AssetIdentityService;
 import dev.mahoraga.memory.ingest.IngestionTransaction;
 import dev.mahoraga.memory.ingest.SourceEventInbox;
+import dev.mahoraga.memory.ingest.SourceEventIngestor;
 import jakarta.validation.Validator;
 import java.util.Objects;
 import org.jdbi.v3.core.Jdbi;
@@ -50,5 +52,10 @@ public final class MahoragaModule extends AbstractModule {
     bind(AssetIdentityService.class);
     bind(FindingIdentityService.class);
     bind(TestAttemptService.class);
+    bind(EngagementCompletionHandler.class);
+    // Production ingestion runs with the no-op fault hook; only tests bind a
+    // failing hook to prove single-transaction rollback.
+    bind(SourceEventIngestor.IngestionFaultHook.class).toInstance(SourceEventIngestor.NO_FAULTS);
+    bind(SourceEventIngestor.class);
   }
 }
