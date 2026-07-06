@@ -33,34 +33,39 @@ public final class IngestorTestSupport {
   public final SourceEventIngestor ingestor;
   private final SourceEventCodec codec;
 
-  private IngestorTestSupport(Jdbi jdbi, SourceEventIngestor.IngestionFaultHook faultHook) {
+  private IngestorTestSupport(Jdbi jdbi, IngestionFaultHook faultHook) {
     this.jdbi = jdbi;
-    AssetIdentityService assetService = new AssetIdentityService(MAPPER);
+    AssetIdentityService assetService = new AssetIdentityService(MAPPER, faultHook);
     this.ingestor =
         new SourceEventIngestor(
             new IngestionTransaction(jdbi, new SourceEventInbox()),
             assetService,
-            new FindingIdentityService(assetService),
-            new TestAttemptService(assetService),
-            new EngagementCompletionHandler(),
+            new FindingIdentityService(assetService, faultHook),
+            new TestAttemptService(assetService, faultHook),
+            new EngagementCompletionHandler(faultHook),
             faultHook);
     this.codec =
         new SourceEventCodec(MAPPER, new SourceEventValidator(BaseValidator.newValidator()));
   }
 
   public static IngestorTestSupport forDatabase(String databaseName) throws SQLException {
-    return forDatabase(databaseName, SourceEventIngestor.NO_FAULTS);
+    return forDatabase(databaseName, IngestionFaultHook.NO_FAULTS);
   }
 
   public static IngestorTestSupport forDatabase(
-      String databaseName, SourceEventIngestor.IngestionFaultHook faultHook) throws SQLException {
+      String databaseName, IngestionFaultHook faultHook) throws SQLException {
     String url = TestDatabase.ensureDatabase(databaseName);
     Flyway.configure()
         .dataSource(url, TestDatabase.username(), TestDatabase.password())
         .load()
         .migrate();
-    return new IngestorTestSupport(
+    return forMigratedDatabase(
         Jdbi.create(url, TestDatabase.username(), TestDatabase.password()), faultHook);
+  }
+
+  /** Full production composition over a caller-supplied Jdbi, e.g. a bounded pool. */
+  public static IngestorTestSupport forMigratedDatabase(Jdbi jdbi, IngestionFaultHook faultHook) {
+    return new IngestorTestSupport(jdbi, faultHook);
   }
 
   /** A minimal valid data event: one authoritative Deployment observation. */

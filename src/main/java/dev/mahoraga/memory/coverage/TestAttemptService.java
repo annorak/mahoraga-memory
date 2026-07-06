@@ -8,6 +8,7 @@ import dev.mahoraga.memory.finding.FindingId;
 import dev.mahoraga.memory.finding.RelevantContextFingerprint;
 import dev.mahoraga.memory.identity.AssetId;
 import dev.mahoraga.memory.identity.AssetIdentityService;
+import dev.mahoraga.memory.ingest.IngestionFaultHook;
 import jakarta.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,11 +29,14 @@ import org.jdbi.v3.core.Handle;
 public final class TestAttemptService {
 
   private final AssetIdentityService assetIdentityService;
+  private final IngestionFaultHook faultHook;
 
   @Inject
-  public TestAttemptService(AssetIdentityService assetIdentityService) {
+  public TestAttemptService(
+      AssetIdentityService assetIdentityService, IngestionFaultHook faultHook) {
     this.assetIdentityService =
         Objects.requireNonNull(assetIdentityService, "assetIdentityService");
+    this.faultHook = Objects.requireNonNull(faultHook, "faultHook");
   }
 
   /**
@@ -60,6 +64,7 @@ public final class TestAttemptService {
             payload.executionStatus(),
             payload.result());
     insertAttempt(handle, attempt);
+    faultHook.afterStage(IngestionFaultHook.Stage.AFTER_TEST_ATTEMPT_WRITE, handle);
     return attempt;
   }
 

@@ -3,7 +3,9 @@ package dev.mahoraga.memory.boundary;
 import dev.mahoraga.memory.contract.EventType;
 import dev.mahoraga.memory.contract.SourceEvent;
 import dev.mahoraga.memory.contract.TrustedContext;
+import dev.mahoraga.memory.ingest.IngestionFaultHook;
 import jakarta.inject.Inject;
+import java.util.Objects;
 import java.util.Optional;
 import org.jdbi.v3.core.Handle;
 
@@ -19,8 +21,12 @@ import org.jdbi.v3.core.Handle;
  */
 public final class EngagementCompletionHandler {
 
+  private final IngestionFaultHook faultHook;
+
   @Inject
-  public EngagementCompletionHandler() {}
+  public EngagementCompletionHandler(IngestionFaultHook faultHook) {
+    this.faultHook = Objects.requireNonNull(faultHook, "faultHook");
+  }
 
   /**
    * Rejects events the stream can no longer accept: anything after
@@ -149,5 +155,6 @@ public final class EngagementCompletionHandler {
           "engagement %s for tenant %s could not record its completion boundary exactly once"
               .formatted(context.engagementId(), context.tenantId()));
     }
+    faultHook.afterStage(IngestionFaultHook.Stage.AFTER_ENGAGEMENT_FINALIZATION_WRITE, handle);
   }
 }

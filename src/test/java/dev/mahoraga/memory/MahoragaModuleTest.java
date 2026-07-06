@@ -10,6 +10,7 @@ import com.google.inject.ConfigurationException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import dev.mahoraga.memory.contract.SourceEventCodec;
+import dev.mahoraga.memory.ingest.IngestionFaultHook;
 import io.dropwizard.jackson.Jackson;
 import io.dropwizard.validation.BaseValidator;
 import jakarta.validation.Validator;
@@ -36,6 +37,9 @@ class MahoragaModuleTest {
     assertSame(validator, injector.getInstance(Validator.class));
     assertSame(JDBI, injector.getInstance(Jdbi.class));
     assertNotNull(injector.getInstance(SourceEventCodec.class));
+    // The server composition has exactly one fault-hook binding: the no-op
+    // constant. No configuration, environment, or mode can swap it.
+    assertSame(IngestionFaultHook.NO_FAULTS, injector.getInstance(IngestionFaultHook.class));
   }
 
   @Test

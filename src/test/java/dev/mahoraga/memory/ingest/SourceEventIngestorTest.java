@@ -97,8 +97,10 @@ class SourceEventIngestorTest {
     IngestorTestSupport faulty =
         IngestorTestSupport.forDatabase(
             DATABASE,
-            handle -> {
-              throw new IllegalStateException("forced failure after domain work");
+            (stage, handle) -> {
+              if (stage == IngestionFaultHook.Stage.BEFORE_TRANSACTION_RETURN) {
+                throw new IllegalStateException("forced failure after domain work");
+              }
             });
     TrustedContext context = new TrustedContext("t-fault", "eng-1");
     CanonicalSourceEvent event = db.findingEvent("evt-fault-1", "stream-fault", 1);
