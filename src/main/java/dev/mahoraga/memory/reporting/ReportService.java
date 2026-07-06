@@ -1,7 +1,7 @@
 package dev.mahoraga.memory.reporting;
 
 import dev.mahoraga.memory.boundary.BoundaryFactQuery;
-import dev.mahoraga.memory.boundary.BoundaryPosition;
+import dev.mahoraga.memory.boundary.FinalizedBoundaries;
 import dev.mahoraga.memory.boundary.KnowledgeBoundary;
 import dev.mahoraga.memory.boundary.KnowledgeBoundaryCodec;
 import dev.mahoraga.memory.contract.SourcePayload.ExecutionStatus;
@@ -47,7 +47,8 @@ public final class ReportService {
 
   /** The current-engagement-only view; the boundary may name nothing else. */
   public Report statelessReport(Handle handle, TrustedContext context, KnowledgeBoundary boundary) {
-    Map<String, String> engagementByStream = requireFinalizedBoundary(handle, context, boundary);
+    Map<String, String> engagementByStream =
+        FinalizedBoundaries.requireFinalized(handle, context, boundary);
     for (Map.Entry<String, String> binding : engagementByStream.entrySet()) {
       if (!binding.getValue().equals(context.engagementId())) {
         throw new IllegalArgumentException(
@@ -63,7 +64,8 @@ public final class ReportService {
 
   /** The longitudinal view; the boundary must include the current engagement. */
   public Report memoryReport(Handle handle, TrustedContext context, KnowledgeBoundary boundary) {
-    Map<String, String> engagementByStream = requireFinalizedBoundary(handle, context, boundary);
+    Map<String, String> engagementByStream =
+        FinalizedBoundaries.requireFinalized(handle, context, boundary);
     if (!engagementByStream.containsValue(context.engagementId())) {
       throw new IllegalArgumentException(
           "the memory view requires the current engagement %s inside its boundary"
@@ -88,51 +90,6 @@ public final class ReportService {
     return new Report(
         view, boundaryHash, context.engagementId(), Report.POLICY_BUNDLE_VERSION,
         currentFacts.digest(), summary);
-  }
-
-  /** Unknown, unfinalized, or partial positions reject before any fact query. */
-  private static Map<String, String> requireFinalizedBoundary(
-      Handle handle, TrustedContext context, KnowledgeBoundary boundary) {
-    List<String> streamIds =
-        boundary.positions().stream().map(BoundaryPosition::sourceStreamId).toList();
-    Map<String, StreamBinding> bindings = new HashMap<>();
-    handle
-        .createQuery(
-            "SELECT source_stream_id, engagement_id, last_data_sequence FROM engagements"
-                + " WHERE tenant_id = :tenantId AND source_stream_id = ANY(:streamIds)")
-        .bind("tenantId", context.tenantId())
-        .bindArray("streamIds", String.class, streamIds)
-        .map(
-            (rs, ctx) ->
-                new StreamBinding(
-                    rs.getString("source_stream_id"),
-                    rs.getString("engagement_id"),
-                    rs.getObject("last_data_sequence", Long.class)))
-        .forEach(binding -> bindings.put(binding.sourceStreamId(), binding));
-    Map<String, String> engagementByStream = new LinkedHashMap<>();
-    for (BoundaryPosition position : boundary.positions()) {
-      StreamBinding binding = bindings.get(position.sourceStreamId());
-      requireFinalizedAt(binding, position);
-      engagementByStream.put(position.sourceStreamId(), binding.engagementId());
-    }
-    return engagementByStream;
-  }
-
-  private static void requireFinalizedAt(StreamBinding binding, BoundaryPosition position) {
-    String streamId = position.sourceStreamId();
-    if (binding == null) {
-      throw new IllegalArgumentException(
-          "stream %s is not an engagement stream of the requesting tenant".formatted(streamId));
-    }
-    if (binding.lastDataSequence() == null) {
-      throw new IllegalArgumentException(
-          "stream %s is not finalized; no report boundary exists for it".formatted(streamId));
-    }
-    if (binding.lastDataSequence() != position.lastDataSequence()) {
-      throw new IllegalArgumentException(
-          "stream %s is finalized at position %d, not the requested %d"
-              .formatted(streamId, binding.lastDataSequence(), position.lastDataSequence()));
-    }
   }
 
   private static Map<UUID, AssetKey> loadAssetKeys(
@@ -297,7 +254,4 @@ public final class ReportService {
             attempt.result()),
         baseline);
   }
-
-  /** One tenant-owned stream row: its engagement and nullable finalized limit. */
-  private record StreamBinding(String sourceStreamId, String engagementId, Long lastDataSequence) {}
 }
