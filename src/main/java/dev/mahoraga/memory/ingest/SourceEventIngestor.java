@@ -26,19 +26,6 @@ import org.jdbi.v3.core.Handle;
  */
 public final class SourceEventIngestor {
 
-  /**
-   * Test-only fault seam invoked after domain work and completion
-   * reevaluation on the same handle. Production binds {@link #NO_FAULTS};
-   * tests inject a failure to prove every current-event write rolls back as
-   * one unit.
-   */
-  @FunctionalInterface
-  public interface IngestionFaultHook {
-    void afterDomainWork(Handle handle);
-  }
-
-  public static final IngestionFaultHook NO_FAULTS = handle -> {};
-
   private final IngestionTransaction transaction;
   private final AssetIdentityService assetIdentityService;
   private final FindingIdentityService findingIdentityService;
@@ -71,6 +58,7 @@ public final class SourceEventIngestor {
   }
 
   private void runDomainWork(Handle handle, TrustedContext context, SourceEvent event) {
+    faultHook.afterStage(IngestionFaultHook.Stage.AFTER_SOURCE_EVENT_INSERT, handle);
     completionHandler.requireStreamAcceptsEvent(handle, context, event);
     String sourceEventId = event.sourceEventId();
     switch (event.payload()) {
@@ -85,6 +73,6 @@ public final class SourceEventIngestor {
       case EngagementCompleted marker -> {}
     }
     completionHandler.reevaluateCompletion(handle, context, event);
-    faultHook.afterDomainWork(handle);
+    faultHook.afterStage(IngestionFaultHook.Stage.BEFORE_TRANSACTION_RETURN, handle);
   }
 }

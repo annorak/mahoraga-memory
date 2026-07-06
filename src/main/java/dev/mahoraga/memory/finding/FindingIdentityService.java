@@ -4,6 +4,7 @@ import dev.mahoraga.memory.contract.SourcePayload.FindingObservation;
 import dev.mahoraga.memory.contract.TrustedContext;
 import dev.mahoraga.memory.identity.AssetId;
 import dev.mahoraga.memory.identity.AssetIdentityService;
+import dev.mahoraga.memory.ingest.IngestionFaultHook;
 import jakarta.inject.Inject;
 import java.util.Objects;
 import java.util.UUID;
@@ -22,11 +23,14 @@ public final class FindingIdentityService {
   public static final int MATCH_KEY_VERSION = 1;
 
   private final AssetIdentityService assetIdentityService;
+  private final IngestionFaultHook faultHook;
 
   @Inject
-  public FindingIdentityService(AssetIdentityService assetIdentityService) {
+  public FindingIdentityService(
+      AssetIdentityService assetIdentityService, IngestionFaultHook faultHook) {
     this.assetIdentityService =
         Objects.requireNonNull(assetIdentityService, "assetIdentityService");
+    this.faultHook = Objects.requireNonNull(faultHook, "faultHook");
   }
 
   /**
@@ -44,7 +48,9 @@ public final class FindingIdentityService {
     insertFindingIfAbsent(handle, context, assetId, payload, contextHash);
     FindingRow recorded = readFinding(handle, context, assetId, payload, sourceEventId);
     requireRecordedBaseline(recorded, payload, contextHash, context, sourceEventId);
+    faultHook.afterStage(IngestionFaultHook.Stage.AFTER_FINDING_RESOLUTION, handle);
     insertOccurrence(handle, context, sourceEventId, recorded.findingId());
+    faultHook.afterStage(IngestionFaultHook.Stage.AFTER_FINDING_OCCURRENCE_WRITE, handle);
     return new FindingId(recorded.findingId());
   }
 

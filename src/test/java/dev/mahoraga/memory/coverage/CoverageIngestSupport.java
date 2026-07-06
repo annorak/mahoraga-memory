@@ -12,6 +12,7 @@ import dev.mahoraga.memory.database.TestDatabase;
 import dev.mahoraga.memory.finding.FindingId;
 import dev.mahoraga.memory.finding.FindingIdentityService;
 import dev.mahoraga.memory.identity.AssetIdentityService;
+import dev.mahoraga.memory.ingest.IngestionFaultHook;
 import dev.mahoraga.memory.ingest.IngestionTransaction;
 import dev.mahoraga.memory.ingest.SourceEventInbox;
 import io.dropwizard.jackson.Jackson;
@@ -45,9 +46,11 @@ final class CoverageIngestSupport {
   private CoverageIngestSupport(Jdbi jdbi) {
     this.jdbi = jdbi;
     this.transaction = new IngestionTransaction(jdbi, new SourceEventInbox());
-    AssetIdentityService assetService = new AssetIdentityService(MAPPER);
-    this.service = new TestAttemptService(assetService);
-    this.findingService = new FindingIdentityService(assetService);
+    AssetIdentityService assetService =
+        new AssetIdentityService(MAPPER, IngestionFaultHook.NO_FAULTS);
+    this.service = new TestAttemptService(assetService, IngestionFaultHook.NO_FAULTS);
+    this.findingService =
+        new FindingIdentityService(assetService, IngestionFaultHook.NO_FAULTS);
     this.codec =
         new SourceEventCodec(MAPPER, new SourceEventValidator(BaseValidator.newValidator()));
   }

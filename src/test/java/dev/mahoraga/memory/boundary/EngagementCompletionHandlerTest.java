@@ -9,6 +9,7 @@ import dev.mahoraga.memory.contract.CanonicalSourceEvent;
 import dev.mahoraga.memory.contract.InvalidSourceEventException;
 import dev.mahoraga.memory.contract.TrustedContext;
 import dev.mahoraga.memory.ingest.IngestResult;
+import dev.mahoraga.memory.ingest.IngestionFaultHook;
 import dev.mahoraga.memory.ingest.IngestorTestSupport;
 import java.sql.SQLException;
 import org.junit.jupiter.api.BeforeAll;
@@ -173,8 +174,10 @@ class EngagementCompletionHandlerTest {
     IngestorTestSupport faulty =
         IngestorTestSupport.forDatabase(
             DATABASE,
-            handle -> {
-              throw new IllegalStateException("forced failure after boundary update");
+            (stage, handle) -> {
+              if (stage == IngestionFaultHook.Stage.AFTER_ENGAGEMENT_FINALIZATION_WRITE) {
+                throw new IllegalStateException("forced failure after boundary update");
+              }
             });
     TrustedContext context = new TrustedContext("t-boundfail", "eng-1");
     db.ingestor.ingest(context, db.assetEvent("evt-bf-1", "stream-bf", 1));

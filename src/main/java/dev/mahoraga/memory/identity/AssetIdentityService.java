@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.mahoraga.memory.contract.SourceEventValidator;
 import dev.mahoraga.memory.contract.SourcePayload.AssetObservation;
 import dev.mahoraga.memory.contract.TrustedContext;
+import dev.mahoraga.memory.ingest.IngestionFaultHook;
 import jakarta.inject.Inject;
 import java.util.Objects;
 import java.util.UUID;
@@ -29,10 +30,12 @@ public final class AssetIdentityService {
   private static final String MVP_RESOURCE_KIND = SourceEventValidator.MVP_RESOURCE_KIND;
 
   private final ObjectMapper objectMapper;
+  private final IngestionFaultHook faultHook;
 
   @Inject
-  public AssetIdentityService(ObjectMapper objectMapper) {
+  public AssetIdentityService(ObjectMapper objectMapper, IngestionFaultHook faultHook) {
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper");
+    this.faultHook = Objects.requireNonNull(faultHook, "faultHook");
   }
 
   /**
@@ -76,6 +79,7 @@ public final class AssetIdentityService {
                     new IllegalStateException(
                         "asset row missing after authoritative insert for source event "
                             + sourceEventId));
+    faultHook.afterStage(IngestionFaultHook.Stage.AFTER_CANONICAL_ASSET_RESOLUTION, handle);
     return new AssetId(recorded);
   }
 
@@ -174,6 +178,7 @@ public final class AssetIdentityService {
         .bind("resolutionPolicyVersion", RESOLUTION_POLICY_VERSION)
         .bind("resolutionBasis", resolutionBasis)
         .execute();
+    faultHook.afterStage(IngestionFaultHook.Stage.AFTER_ASSET_OBSERVATION_WRITE, handle);
   }
 
   private String labelsJson(AssetObservation payload) {

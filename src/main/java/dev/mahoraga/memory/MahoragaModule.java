@@ -8,6 +8,7 @@ import dev.mahoraga.memory.contract.SourceEventValidator;
 import dev.mahoraga.memory.coverage.TestAttemptService;
 import dev.mahoraga.memory.finding.FindingIdentityService;
 import dev.mahoraga.memory.identity.AssetIdentityService;
+import dev.mahoraga.memory.ingest.IngestionFaultHook;
 import dev.mahoraga.memory.ingest.IngestionTransaction;
 import dev.mahoraga.memory.ingest.SourceEventInbox;
 import dev.mahoraga.memory.ingest.SourceEventIngestor;
@@ -49,13 +50,13 @@ public final class MahoragaModule extends AbstractModule {
     bind(SourceEventCodec.class);
     bind(SourceEventInbox.class);
     bind(IngestionTransaction.class);
+    // Production ingestion runs with the no-op fault hook at every stage; only
+    // tests bind a failing hook to prove single-transaction rollback.
+    bind(IngestionFaultHook.class).toInstance(IngestionFaultHook.NO_FAULTS);
     bind(AssetIdentityService.class);
     bind(FindingIdentityService.class);
     bind(TestAttemptService.class);
     bind(EngagementCompletionHandler.class);
-    // Production ingestion runs with the no-op fault hook; only tests bind a
-    // failing hook to prove single-transaction rollback.
-    bind(SourceEventIngestor.IngestionFaultHook.class).toInstance(SourceEventIngestor.NO_FAULTS);
     bind(SourceEventIngestor.class);
   }
 }

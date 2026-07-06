@@ -20,6 +20,7 @@ import dev.mahoraga.memory.database.TestDatabase;
 import dev.mahoraga.memory.identity.AssetResolution.Ambiguous;
 import dev.mahoraga.memory.identity.AssetResolution.Resolved;
 import dev.mahoraga.memory.ingest.IngestResult;
+import dev.mahoraga.memory.ingest.IngestionFaultHook;
 import dev.mahoraga.memory.ingest.IngestionTransaction;
 import dev.mahoraga.memory.ingest.SourceEventInbox;
 import io.dropwizard.jackson.Jackson;
@@ -59,7 +60,7 @@ class AssetIdentityServiceTest {
         .migrate();
     jdbi = Jdbi.create(url, TestDatabase.username(), TestDatabase.password());
     transaction = new IngestionTransaction(jdbi, new SourceEventInbox());
-    service = new AssetIdentityService(MAPPER);
+    service = new AssetIdentityService(MAPPER, IngestionFaultHook.NO_FAULTS);
     codec = new SourceEventCodec(MAPPER, new SourceEventValidator(BaseValidator.newValidator()));
   }
 
