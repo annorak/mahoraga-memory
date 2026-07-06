@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
-/** Shared loader construction and resource loading for fixture-contract tests. */
-final class FixtureTestSupport {
+/** Shared loader construction and resource loading for fixture and planner tests. */
+public final class FixtureTestSupport {
 
   private FixtureTestSupport() {}
 
-  static FixtureLoader loader() {
+  public static FixtureLoader loader() {
     var mapper = Jackson.newObjectMapper();
     var codec =
         new SourceEventCodec(mapper, new SourceEventValidator(BaseValidator.newValidator()));
@@ -38,7 +38,7 @@ final class FixtureTestSupport {
    * The manifest is validated against the planner and background events it
    * references; the completion marker sits in its own event set.
    */
-  static V1Bundle loadV1() {
+  public static V1Bundle loadV1() {
     return loadV1(UnaryOperator.identity());
   }
 
@@ -46,7 +46,7 @@ final class FixtureTestSupport {
    * Loads the bundle after applying {@code transform} to each raw resource, so
    * a test can prove that reformatted input yields the same typed values.
    */
-  static V1Bundle loadV1(UnaryOperator<String> transform) {
+  public static V1Bundle loadV1(UnaryOperator<String> transform) {
     FixtureLoader loader = loader();
     FixtureEventSet e1 = loader.loadEventSet(transform.apply(v1("engagement-e1.json")));
     FixtureEventSet planner =
@@ -64,7 +64,7 @@ final class FixtureTestSupport {
   }
 
   /** The loaded v1 fixture bundle: E1, the three E2 files, and the runner manifest. */
-  record V1Bundle(
+  public record V1Bundle(
       FixtureEventSet e1,
       FixtureEventSet e2Planner,
       FixtureEventSet e2Background,
