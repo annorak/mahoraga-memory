@@ -18,6 +18,13 @@ target/
 # Local demo artifacts (see implementation plan, TASK-019)
 artifacts/
 
+# Demo video binary and temporary screen-capture files are never committed.
+# The transcript, captions, and manifest under docs/demo/ remain tracked.
+*.mp4
+*.mov
+*.mkv
+*.webm
+
 # Planning documents excluded from version control by owner decision
 old docs/
 tasks/
