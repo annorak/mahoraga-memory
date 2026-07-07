@@ -160,14 +160,25 @@ public final class SteeringArmRunner {
 
   /** An arm never resumes a used database; retry means a fresh empty target. */
   private void requireCleanDatabase() {
-    long existing =
+    boolean hasApplicationState =
         jdbi.withHandle(
             handle ->
-                handle.createQuery("SELECT count(*) FROM source_events").mapTo(Long.class).one());
-    if (existing != 0) {
+                handle
+                    .createQuery(
+                        """
+                        SELECT EXISTS (SELECT 1 FROM engagements)
+                            OR EXISTS (SELECT 1 FROM source_events)
+                            OR EXISTS (SELECT 1 FROM assets)
+                            OR EXISTS (SELECT 1 FROM asset_observations)
+                            OR EXISTS (SELECT 1 FROM findings)
+                            OR EXISTS (SELECT 1 FROM finding_occurrences)
+                            OR EXISTS (SELECT 1 FROM test_attempts)
+                        """)
+                    .mapTo(Boolean.class)
+                    .one());
+    if (hasApplicationState) {
       throw new IllegalStateException(
-          "a steering arm requires an empty database but found %d source events"
-              .formatted(existing));
+          "a steering arm requires an empty database but application state already exists");
     }
   }
 

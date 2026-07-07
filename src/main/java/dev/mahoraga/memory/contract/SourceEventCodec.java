@@ -38,7 +38,7 @@ public final class SourceEventCodec {
     ObjectMapper managedMapper = Objects.requireNonNull(objectMapper, "objectMapper");
     this.strictMapper = strictCopyOf(managedMapper);
     this.validator = Objects.requireNonNull(validator, "validator");
-    this.canonicalizer = new SourceEventCanonicalizer(managedMapper);
+    this.canonicalizer = new SourceEventCanonicalizer();
   }
 
   public CanonicalSourceEvent decode(String json) {

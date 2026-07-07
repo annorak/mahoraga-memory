@@ -3,12 +3,15 @@ package dev.mahoraga.memory.contract;
 import static dev.mahoraga.memory.contract.ContractTestSupport.codec;
 import static dev.mahoraga.memory.contract.ContractTestSupport.contract;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import io.dropwizard.validation.BaseValidator;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,25 @@ class CanonicalSourceHashTest {
         new String(canonical.canonicalJson(), UTF_8),
         name);
     assertEquals(expectedHash, canonical.canonicalSourceHash(), name);
+  }
+
+  @Test
+  void canonicalizationDoesNotInheritApplicationSerializationSettings() {
+    ObjectMapper configuredMapper =
+        new ObjectMapper()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+    SourceEventCodec configuredCodec =
+        new SourceEventCodec(
+            configuredMapper, new SourceEventValidator(BaseValidator.newValidator()));
+
+    CanonicalSourceEvent expected = codec.decode(contract("finding-observation.json"));
+    CanonicalSourceEvent actual =
+        configuredCodec.decode(contract("finding-observation.json"));
+
+    assertArrayEquals(expected.canonicalJson(), actual.canonicalJson());
+    assertEquals(expected.canonicalPayloadJson(), actual.canonicalPayloadJson());
+    assertEquals(FINDING_HASH, actual.canonicalSourceHash());
   }
 
   @Test

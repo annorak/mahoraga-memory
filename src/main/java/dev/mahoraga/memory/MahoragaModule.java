@@ -6,6 +6,7 @@ import dev.mahoraga.memory.boundary.EngagementCompletionHandler;
 import dev.mahoraga.memory.contract.SourceEventCodec;
 import dev.mahoraga.memory.contract.SourceEventValidator;
 import dev.mahoraga.memory.coverage.TestAttemptService;
+import dev.mahoraga.memory.demo.DemoRunner;
 import dev.mahoraga.memory.finding.FindingIdentityService;
 import dev.mahoraga.memory.identity.AssetIdentityService;
 import dev.mahoraga.memory.ingest.IngestionFaultHook;
@@ -58,5 +59,6 @@ public final class MahoragaModule extends AbstractModule {
     bind(TestAttemptService.class);
     bind(EngagementCompletionHandler.class);
     bind(SourceEventIngestor.class);
+    bind(DemoRunner.class);
   }
 }

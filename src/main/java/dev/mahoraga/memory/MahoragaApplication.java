@@ -2,6 +2,7 @@ package dev.mahoraga.memory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import dev.mahoraga.memory.commands.DemoCommand;
 import dev.mahoraga.memory.database.DatabaseMigrator;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
@@ -36,6 +37,7 @@ public class MahoragaApplication extends Application<MahoragaConfiguration> {
     bootstrap.setConfigurationSourceProvider(
         new SubstitutingSourceProvider(
             bootstrap.getConfigurationSourceProvider(), new EnvironmentVariableSubstitutor()));
+    bootstrap.addCommand(new DemoCommand(this));
   }
 
   @Override

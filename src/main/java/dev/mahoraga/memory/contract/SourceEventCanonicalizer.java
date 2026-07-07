@@ -9,7 +9,6 @@ import dev.mahoraga.memory.contract.SourcePayload.TestAttempt;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -20,11 +19,7 @@ import java.util.TreeMap;
  */
 final class SourceEventCanonicalizer {
 
-  private final ObjectMapper canonicalMapper;
-
-  SourceEventCanonicalizer(ObjectMapper objectMapper) {
-    this.canonicalMapper = Objects.requireNonNull(objectMapper, "objectMapper").copy();
-  }
+  private final ObjectMapper canonicalMapper = new ObjectMapper();
 
   byte[] canonicalBytes(SourceEvent event) {
     Map<String, Object> envelope = new LinkedHashMap<>();
