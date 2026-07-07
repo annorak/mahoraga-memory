@@ -1,0 +1,206 @@
+WEBVTT
+
+NOTE
+Draft captions derived from the approved narration in demo-script.md /
+demo-transcript.md. Cue times follow the script's timing budget (target 6:30).
+Before acceptance they must be reconciled against the actual recorded narration;
+captions never override what was actually spoken. Synthetic MVP — no customer data.
+
+1
+00:00.000 --> 00:04.000
+Synthetic MVP — no customer data.
+
+2
+00:04.000 --> 00:10.500
+An automated offensive-security swarm tests
+a customer, then forgets it all afterward.
+
+3
+00:10.500 --> 00:17.000
+Next quarter it starts from a blank notebook —
+no memory of what was open, fixed, or came back.
+
+4
+00:17.000 --> 00:25.000
+Everything here is a deterministic synthetic MVP:
+one Java app, one PostgreSQL database, fixtures.
+
+5
+00:25.000 --> 00:35.000
+It is not wired into Armadin production.
+
+6
+00:35.000 --> 00:43.000
+Preflight is read-only — it checks Java, Docker,
+the artifact, and the safety guards, changing nothing.
+
+7
+00:43.000 --> 00:50.000
+Then one command runs the whole demonstration.
+
+8
+00:50.000 --> 00:58.000
+Engagement 1 is ingested first: every fact is a
+tenant-scoped immutable row.
+
+9
+00:58.000 --> 01:05.000
+It's finalized behind an explicit knowledge boundary.
+
+10
+01:05.000 --> 01:12.500
+The planner runs at the Engagement 1 boundary,
+before any Engagement 2 result exists.
+
+11
+01:12.500 --> 01:20.000
+It sees opaque candidate IDs only — no labels,
+no outcomes, no eventual classification.
+
+12
+01:20.000 --> 01:28.000
+With memory off, it orders candidates plainly:
+T-A, T-B, T-C.
+
+13
+01:28.000 --> 01:40.000
+With memory on, it uses one persisted fact —
+a target previously verified resolved —
+
+14
+01:40.000 --> 01:48.000
+and rechecks it first: T-C, T-A, T-B.
+
+15
+01:48.000 --> 01:58.000
+Both plans execute the same frozen outcomes
+in separate, identical copies of E1 state.
+
+16
+01:58.000 --> 02:10.000
+Regression discovery: action three without memory,
+action one with memory.
+
+17
+02:10.000 --> 02:25.000
+Zero Engagement 2 events at planning — nothing leaked.
+
+18
+02:25.000 --> 02:34.000
+Between engagements the Pod UID, name, and IP
+all changed.
+
+19
+02:34.000 --> 02:43.000
+But the canonical Kubernetes Deployment identity
+stayed the same, so the finding is the same finding.
+
+20
+02:43.000 --> 02:55.000
+A weak collision — a reused DNS name with no
+authoritative UID —
+
+21
+02:55.000 --> 03:06.000
+is held as AMBIGUOUS and changes posture zero times.
+
+22
+03:06.000 --> 03:20.000
+Weak evidence never silently merges two assets.
+
+23
+03:20.000 --> 03:30.000
+These are the exact same Engagement 2 facts,
+through two knowledge boundaries — no second code path.
+
+24
+03:30.000 --> 03:42.000
+A stateless scan sees three detections,
+one not-detected, one partial,
+
+25
+03:42.000 --> 03:52.000
+and cannot even represent the finding
+that was never retested.
+
+26
+03:52.000 --> 04:05.000
+Put Engagement 1 memory back in scope
+and the same facts gain lifecycle meaning:
+
+27
+04:05.000 --> 04:18.000
+new, still open, verified resolved, regressed,
+not retested, inconclusive.
+
+28
+04:18.000 --> 04:30.000
+A completed compatible negative verifies
+resolution; absence does not.
+
+29
+04:30.000 --> 04:44.000
+Only the memory view can say a fix came back,
+or distinguish verified resolution from a first negative,
+
+30
+04:44.000 --> 04:55.000
+and flag a known weakness that wasn't retested.
+
+31
+04:55.000 --> 05:05.000
+Ingestion is deterministic and safe.
+
+32
+05:05.000 --> 05:14.000
+An identical retry is a no-op;
+a conflicting duplicate is rejected.
+
+33
+05:14.000 --> 05:24.000
+A report is blocked while a completion
+sequence is missing.
+
+34
+05:24.000 --> 05:34.000
+Shuffled arrival order produces the same
+report hash.
+
+35
+05:34.000 --> 05:45.000
+A forced transaction failure leaves no partial state.
+
+36
+05:45.000 --> 05:56.000
+For Armadin this turns a point-in-time scan
+into continuous, longitudinal security:
+
+37
+05:56.000 --> 06:06.000
+regression detection, verified-resolution tracking,
+and coverage honesty.
+
+38
+06:06.000 --> 06:18.000
+Honest limits: not production-scale, HA, or DR;
+not integrated with Armadin.
+
+39
+06:18.000 --> 06:30.000
+No zero-change-integration, authorization, privacy,
+or cross-tenant claims.
+
+40
+06:30.000 --> 06:40.000
+The internal event contract reduces future
+adapter work but does not remove it.
+
+41
+06:40.000 --> 06:52.000
+The 3-to-1 result, stable identity, the six
+classifications, and the correctness checks
+
+42
+06:52.000 --> 07:00.000
+were computed from executed behavior and
+reproduce byte-for-byte. Synthetic MVP, real result.
