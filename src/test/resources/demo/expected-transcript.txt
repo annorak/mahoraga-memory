@@ -1,0 +1,40 @@
+MAHORAGA MEMORY MVP
+Synthetic local evidence
+
+Steering
+Candidate tests: [T-A, T-B, T-C]
+Memory disabled: [T-A, T-B, T-C]
+Memory enabled: [T-C, T-A, T-B]
+Actions before regression detection: 3 -> 1
+Zero E2 events at planning: true
+
+Stable identity
+Pod UID/name/IP changed: true
+Canonical Deployment unchanged: true
+Weak-signal collision: AMBIGUOUS
+Posture changes from ambiguous observation: 0
+
+Stateless E2 view
+Detected: 3
+Not detected: 1
+Partial: 1
+Findings with no E2 fact: unrepresentable
+Longitudinal classifications: unavailable
+
+Memory-aware E1 + E2 view
+NEW: 1
+STILL_OPEN: 1
+VERIFIED_RESOLVED: 1
+REGRESSED: 1
+NOT_RETESTED: 1
+INCONCLUSIVE: 1
+
+Correctness
+Duplicate retry: NO_OP
+Conflicting duplicate: EVENT_CONTENT_REJECTED
+Missing completion sequence: UNFINALIZED_REPORT_BLOCKED
+Shuffled ingestion report hash equal: true
+Transaction failure leaves partial state: false
+
+Scope
+Synthetic product-value demonstration; not a production privacy or security validation.
