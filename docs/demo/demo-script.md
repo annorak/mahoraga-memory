@@ -4,7 +4,7 @@ A roughly 7-minute walkthrough. The goal is to sound like a real person who buil
 and cares about it — technical, but explaining things plainly, the way you'd talk
 a junior engineer through it. Not a pitch. Keep it honest and a little informal.
 
-- **Target runtime:** ~7:15. **Hard maximum:** 7:59.
+- **Target runtime:** ~7:35. **Hard maximum:** 7:59.
 - **Audience:** Armadin engineering and product.
 - **Read-off version:** [`FINAL-SCRIPT.md`](../../FINAL-SCRIPT.md) is the plain
   teleprompter with `▶ RUN` markers; this file is the annotated planning version.
@@ -39,21 +39,21 @@ on screen — that's what you read from in segments 5–8.
 
 | Time | Segment | Max | Story beats |
 |---|---|---:|---|
-| 0:00–0:40 | Intro — who I am, what this is, how I built it | 0:40 | — |
-| 0:40–1:10 | The blank-notebook problem, and "this is fake data" | 0:30 | 1, 2 |
-| 1:10–1:35 | One command, and the Engagement 1 line | 0:25 | 3 |
-| 1:35–2:50 | The plans can't cheat, and the 3 → 1 | 1:15 | 4, 5, 6 |
-| 2:50–3:40 | Same thing after everything changed, and "I don't know" | 0:50 | 7, 8 |
-| 3:40–5:05 | Same facts, two lenses | 1:25 | 9 |
-| 5:05–5:50 | The boring stuff that has to be right | 0:45 | 10 |
-| 5:50–7:05 | Why I built this, and where it goes | 1:15 | 11 |
-| 7:05–7:25 | Wrap up | 0:20 | — |
+| 0:00–0:35 | Intro — who I am, what this is, how I built it | 0:35 | — |
+| 0:35–1:05 | The blank-notebook problem, and "this is fake data" | 0:30 | 1, 2 |
+| 1:05–2:00 | What present is doing — stubs the swarm, runs it twice | 0:55 | 3 |
+| 2:00–3:20 | What T-A/T-B/T-C are, and the 3 → 1 | 1:20 | 4, 5, 6 |
+| 3:20–4:15 | Same thing after everything changed (real K8s churn) | 0:55 | 7, 8 |
+| 4:15–5:30 | Same facts, two lenses | 1:15 | 9 |
+| 5:30–6:10 | The boring stuff that has to be right | 0:40 | 10 |
+| 6:10–7:15 | Why I built this, and where it goes | 1:05 | 11 |
+| 7:15–7:35 | Wrap up | 0:20 | — |
 
 If a rehearsal runs long, cut words — don't add anything new to fill the buffer.
 
 ---
 
-## Segment 0 — Intro: who I am, what this is, how I built it (0:00–0:40, max 0:40)
+## Segment 0 — Intro: who I am, what this is, how I built it (0:00–0:35, max 0:35)
 
 - **On-screen action:** terminal up; the "Synthetic MVP — no customer data" line
   is visible from the start.
@@ -70,7 +70,7 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
   any jargon. Keep it warm and short.
 - **Transition:** "So, first the problem."
 
-## Segment 1 — The blank-notebook problem, and "this is fake data" (0:40–1:10, max 0:30)
+## Segment 1 — The blank-notebook problem, and "this is fake data" (0:35–1:05, max 0:30)
 
 - **On-screen action:** terminal up; the "Synthetic MVP — no customer data" line
   is visible.
@@ -86,25 +86,30 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
 - **Product meaning:** name the gap in plain terms; keep the honest scope loud.
 - **Transition:** "Let me just run it."
 
-## Segment 2 — One command, and the Engagement 1 line (1:10–1:35, max 0:25)
+## Segment 2 — What present is doing: it stubs the swarm and runs twice (1:05–2:00, max 0:55)
 
 - **On-screen action:** type `scripts/demo.sh preflight`, then `scripts/demo.sh present`.
-- **Expected output cue:** `Preflight passed.`, then `== Preflight ==` and
-  `== Memory disabled ==` start streaming.
-- **Narration:** "One command does the whole thing. This first part, preflight,
-  is just me being careful — it checks Java, Docker, that the build's there, that
-  the safety guards are good — and it doesn't change anything. Then it loads up
-  Engagement 1. Every fact it learns is its own row, locked down, scoped to the
-  tenant. And when the engagement's done, we draw a hard line that says 'this is
-  everything we knew, as of right now.' Hang on to that line, it matters in a
-  second."
-- **Product meaning:** durable, boundary-controlled memory is the foundation.
-- **Transition:** "Because here's the part I actually care about."
+- **Expected output cue:** `Preflight passed.`, then `== Preflight ==`,
+  `== Memory disabled ==`, `== Memory enabled ==` stream.
+- **Narration:** "That preflight I just ran was just me being careful — it checks
+  Java, Docker, the build, the safety guards, and it changes nothing. Now this next
+  command is the whole trick, so let me tell you what it's actually doing. Think of it
+  as standing in for the swarm — the thing that would normally go run the attacks.
+  Real engagements are messy and random, so I've frozen the whole thing into a
+  fixture: a fixed set of checks with fixed results. That's on purpose — it means the
+  only thing that can change between runs is Mahoraga's memory. And it runs the entire
+  second engagement twice — once with memory off, once with memory on — each against
+  its own clean database, from the exact same starting point. So if anything's
+  different at the end, you know it came from the memory and nothing else. It's a
+  controlled experiment. It loads Engagement 1 first, and draws that hard line —
+  everything we knew, as of right now. Keep that in mind, it matters in a sec."
+- **Product meaning:** the fixture stubs the agent's actions with frozen outcomes so
+  memory is the only variable; the two arms are a controlled experiment.
+- **Transition:** "Okay, so what actually comes out of that."
 
-## Segment 3 — The plans can't cheat, and the 3 → 1 (1:35–2:50, max 1:15)
+## Segment 3 — What T-A/T-B/T-C are, and the 3 → 1 (2:00–3:20, max 1:20)
 
-- **On-screen action:** talk while `== Memory disabled ==` and
-  `== Memory enabled ==` run.
+- **On-screen action:** point at the candidate/plan/metric lines in the printed proof.
 - **Expected output cue (from the final transcript):**
   ```
   Candidate tests: [T-A, T-B, T-C]
@@ -113,23 +118,27 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
   Actions before regression detection: 3 -> 1
   Zero E2 events at planning: true
   ```
-- **Narration:** "Storing stuff is fine, whatever — the real question is whether
-  the memory changes what you do next. So there's a planner, and it runs at that
-  Engagement 1 line, before we know anything about the second engagement. And this
-  is the part people get wrong: it is so easy to accidentally let the future leak
-  in — to let the planner peek at answers it shouldn't have yet. So the planner
-  only ever sees opaque IDs. No labels, no results, nothing about how it turns out.
-  With memory off, it just goes in order: A, B, C. Turn memory on, and it knows one
-  of these got fixed last time and is worth double-checking, so it pulls that one
-  to the front: C, A, B. Then both plans actually run, against identical copies of
-  the same starting point, same outcomes baked in. And the bug that came back —
-  memory catches it on the very first move instead of the third. Three to one. And
-  that 'zero events at planning' line is just me proving nothing leaked."
-- **Product meaning:** memory re-prioritizes the next engagement, and it's measured
-  from what actually ran, not asserted.
+- **Narration:** "See these three up top — T-A, T-B, T-C? Those are just three checks
+  the swarm could run in the second engagement — basically 'go re-test this, go
+  re-test that.' And to the planner they're completely opaque; it's three IDs, it has
+  no idea what any of them will find. That part matters. So the planner's only job
+  here is: what order do we run these in? With memory off it's got nothing to go on,
+  so it just runs them in order — A, B, C. Turn memory on, and it looks back at
+  Engagement 1 and notices one of these is pointing at something we'd already confirmed
+  fixed. And something you fixed coming back is exactly what you want to check first —
+  so it pulls that one to the front: C, A, B. Then both plans actually run, same frozen
+  results baked in — and here's the payoff: the bug that came back, the memory version
+  catches it on the very first action instead of the third. Three down to one. And
+  that's how you know it's the memory and not luck — both runs started from the
+  identical state, with the identical outcomes. The one and only difference was whether
+  the planner could see history. Same everything, better result — that's the memory
+  engine doing its job. And 'zero events at planning' is just me proving the planner
+  never got to peek at the second engagement's answers."
+- **Product meaning:** opaque candidates + a held-constant experiment are what make the
+  3 → 1 a causal proof of memory, not a coincidence.
 - **Transition:** "None of this works, though, if you can't tell it's the same thing."
 
-## Segment 4 — Same thing after everything changed, and "I don't know" (2:50–3:40, max 0:50)
+## Segment 4 — Same thing after everything changed, and "I don't know" (3:20–4:15, max 0:55)
 
 - **On-screen action:** talk; point at the identity block once it prints.
 - **Expected output cue:**
@@ -142,16 +151,20 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
 - **Narration:** "Between the two engagements the pod got a new ID, a new name, a
   new IP — basically everything you'd normally key on changed. But the actual
   Deployment underneath is the same, so we keep it as the same asset, and the
-  finding stays stuck to it. That's what lets you talk about a bug across time. And
-  then the opposite case: when something's genuinely fuzzy — a reused DNS name with
+  finding stays stuck to it. That's what lets you talk about a bug over time. And
+  that's Mahoraga doing exactly what it's supposed to — tracking a finding across
+  engagements even when the asset's name and IP change out from under it. In real
+  Kubernetes that happens constantly: pods get rescheduled, IPs get recycled, names
+  churn. The Deployment is the thing that's actually stable, so that's what we key on.
+  And then the opposite case: when something's genuinely fuzzy — a reused DNS name with
   nothing solid behind it — it doesn't guess. It marks it ambiguous and flat-out
   refuses to let it move any numbers. It'd rather say 'I don't know' than smash two
   things together that might not be the same thing."
-- **Product meaning:** stable identity under churn is what makes the memory
-  trustworthy instead of noisy.
+- **Product meaning:** stable identity under real production churn is what makes the
+  memory trustworthy instead of noisy.
 - **Transition:** "Alright, this next one's the one I'd actually show a customer."
 
-## Segment 5 — Same facts, two lenses (3:40–5:05, max 1:25)
+## Segment 5 — Same facts, two lenses (4:15–5:30, max 1:15)
 
 - **On-screen action:** walk through the two report blocks in the printed transcript.
 - **Expected output cue:**
@@ -186,7 +199,7 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
   repeated one-off scans.
 - **Transition:** "Real quick on the boring stuff, because it has to be right."
 
-## Segment 6 — The boring stuff that has to be right (5:05–5:50, max 0:45)
+## Segment 6 — The boring stuff that has to be right (5:30–6:10, max 0:40)
 
 - **On-screen action:** read the correctness block.
 - **Expected output cue:**
@@ -207,7 +220,7 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
 - **Product meaning:** the evidence behind the story holds up to real messiness.
 - **Transition:** "So — why does Armadin actually care."
 
-## Segment 7 — Why I built this, and where it goes (5:50–7:05, max 1:15)
+## Segment 7 — Why I built this, and where it goes (6:10–7:15, max 1:05)
 
 - **On-screen action:** transcript's `Scope` line visible.
 - **Expected output cue:**
@@ -241,7 +254,7 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
   next, not through overclaiming what exists.
 - **Transition:** "Okay, wrapping up."
 
-## Segment 8 — Wrap up (7:05–7:25, max 0:20)
+## Segment 8 — Wrap up (7:15–7:35, max 0:20)
 
 - **On-screen action:** the full proof block is on screen.
 - **Expected output cue:** the complete printed proof, ending at the `Scope` line.

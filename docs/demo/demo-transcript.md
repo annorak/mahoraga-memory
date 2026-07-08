@@ -1,7 +1,7 @@
 # Mahoraga Memory MVP — Demo Transcript
 
 Narration transcript for the demo video, matching the conversational narration in
-[`demo-script.md`](demo-script.md). Timecodes follow the script's ~7:15 budget.
+[`demo-script.md`](demo-script.md). Timecodes follow the script's ~7:35 budget.
 Before acceptance, this transcript and [`demo-captions.vtt`](demo-captions.vtt)
 get reconciled against what you actually say on the recording — they never
 override the real narration.
@@ -10,7 +10,7 @@ override the real narration.
 
 ---
 
-**[0:00–0:40] Intro**
+**[0:00–0:35] Intro**
 
 Hey — I'm Varun. [one line about you: what you do / your background.] I built this
 thing called Mahoraga and I want to walk you through it. Short version: it's a
@@ -21,7 +21,7 @@ no LLM anywhere in the core; it's all plain, reproducible logic, so everything
 you're about to see comes out identical every single time I run it. Let me start
 with the problem, then just run it.
 
-**[0:40–1:10] The blank-notebook problem, and "this is fake data"**
+**[0:35–1:05] The blank-notebook problem, and "this is fake data"**
 
 First — and I'll keep saying this — everything here is fake data. It's a synthetic
 demo, it is not wired into Armadin's real systems. Okay. The problem I care about:
@@ -31,42 +31,54 @@ quarter it shows up and it's starting from zero. It can't tell you if the bug it
 found last time is still there, or got fixed, or got fixed and then came right back.
 That gap — that's the whole thing I'm trying to fix. It's the memory.
 
-**[1:10–1:35] One command, and the Engagement 1 line**
+**[1:05–2:00] What present is doing: it stubs the swarm and runs twice**
 
-One command does the whole thing. This first part, preflight, is just me being
-careful — it checks Java, Docker, that the build's there, that the safety guards
-are good — and it doesn't change anything. Then it loads up Engagement 1. Every
-fact it learns is its own row, locked down, scoped to the tenant. And when the
-engagement's done, we draw a hard line that says "this is everything we knew, as of
-right now." Hang on to that line, it matters in a second.
+That preflight I just ran was just me being careful — it checks Java, Docker, the
+build, the safety guards, and it changes nothing. Now this next command is the whole
+trick, so let me tell you what it's actually doing. Think of it as standing in for the
+swarm — the thing that would normally go run the attacks. Real engagements are messy
+and random, so I've frozen the whole thing into a fixture: a fixed set of checks with
+fixed results. That's on purpose — it means the only thing that can change between runs
+is Mahoraga's memory. And it runs the entire second engagement twice — once with memory
+off, once with memory on — each against its own clean database, from the exact same
+starting point. So if anything's different at the end, you know it came from the memory
+and nothing else. It's a controlled experiment. It loads Engagement 1 first, and draws
+that hard line — everything we knew, as of right now. Keep that in mind, it matters in
+a sec.
 
-**[1:35–2:50] The plans can't cheat, and the 3 → 1**
+**[2:00–3:20] What T-A/T-B/T-C are, and the 3 → 1**
 
-Storing stuff is fine, whatever — the real question is whether the memory changes
-what you do next. So there's a planner, and it runs at that Engagement 1 line,
-before we know anything about the second engagement. And this is the part people
-get wrong: it is so easy to accidentally let the future leak in — to let the
-planner peek at answers it shouldn't have yet. So the planner only ever sees opaque
-IDs. No labels, no results, nothing about how it turns out. With memory off, it
-just goes in order: A, B, C. Turn memory on, and it knows one of these got fixed
-last time and is worth double-checking, so it pulls that one to the front: C, A, B.
-Then both plans actually run, against identical copies of the same starting point,
-same outcomes baked in. And the bug that came back — memory catches it on the very
-first move instead of the third. Three to one. And that "zero events at planning"
-line is just me proving nothing leaked.
+See these three up top — T-A, T-B, T-C? Those are just three checks the swarm could run
+in the second engagement — basically "go re-test this, go re-test that." And to the
+planner they're completely opaque; it's three IDs, it has no idea what any of them will
+find. That part matters. So the planner's only job here is: what order do we run these
+in? With memory off it's got nothing to go on, so it just runs them in order — A, B, C.
+Turn memory on, and it looks back at Engagement 1 and notices one of these is pointing
+at something we'd already confirmed fixed. And something you fixed coming back is exactly
+what you want to check first — so it pulls that one to the front: C, A, B. Then both
+plans actually run, same frozen results baked in — and here's the payoff: the bug that
+came back, the memory version catches it on the very first action instead of the third.
+Three down to one. And that's how you know it's the memory and not luck — both runs
+started from the identical state, with the identical outcomes. The one and only
+difference was whether the planner could see history. Same everything, better result —
+that's the memory engine doing its job. And "zero events at planning" is just me proving
+the planner never got to peek at the second engagement's answers.
 
-**[2:50–3:40] Same thing after everything changed, and "I don't know"**
+**[3:20–4:15] Same thing after everything changed, and "I don't know"**
 
 Between the two engagements the pod got a new ID, a new name, a new IP — basically
 everything you'd normally key on changed. But the actual Deployment underneath is
 the same, so we keep it as the same asset, and the finding stays stuck to it.
-That's what lets you talk about a bug across time. And then the opposite case: when
-something's genuinely fuzzy — a reused DNS name with nothing solid behind it — it
-doesn't guess. It marks it ambiguous and flat-out refuses to let it move any
-numbers. It'd rather say "I don't know" than smash two things together that might
-not be the same thing.
+That's what lets you talk about a bug over time. And that's Mahoraga doing exactly
+what it's supposed to — tracking a finding across engagements even when the asset's
+name and IP change out from under it. In real Kubernetes that happens constantly: pods
+get rescheduled, IPs get recycled, names churn. The Deployment is the thing that's
+actually stable, so that's what we key on. And then the opposite case: when something's
+genuinely fuzzy — a reused DNS name with nothing solid behind it — it doesn't guess. It
+marks it ambiguous and flat-out refuses to let it move any numbers. It'd rather say "I
+don't know" than smash two things together that might not be the same thing.
 
-**[3:40–5:05] Same facts, two lenses**
+**[4:15–5:30] Same facts, two lenses**
 
 Same exact Engagement 2 facts — I'm not touching the data — I'm just changing how
 much history it's allowed to look at. With no memory, which is what a normal
@@ -80,7 +92,7 @@ reran the same check and it came back clean. Not seeing a bug is not the same as
 the bug being gone. Only the memory version can tell you a fix came back, or that
 you straight-up forgot to retest something.
 
-**[5:05–5:50] The boring stuff that has to be right**
+**[5:30–6:10] The boring stuff that has to be right**
 
 This is the unglamorous stuff that just has to work. Send the same event twice —
 no-op, nothing happens. Send a conflicting one — rejected. Ask for a report before
@@ -89,7 +101,7 @@ in — you get the exact same report. Kill a transaction halfway through — not
 left behind, no half-written mess. Same facts, same answer, every time. That's the
 part you have to be able to trust before any of the rest matters.
 
-**[5:50–7:05] Why I built this, and where it goes**
+**[6:10–7:15] Why I built this, and where it goes**
 
 So — why did I actually build this. Honestly, mostly for fun. I'm pretty sure the
 folks at Armadin are already thinking about this, or already have something like
@@ -113,7 +125,7 @@ fascinating one — safely sharing learnings across customers without leaking an
 data. Each of those is its own project. But the core — the memory engine, the part
 that has to be correct — that's what I've got working and proven right here.
 
-**[7:05–7:25] Wrap up**
+**[7:15–7:35] Wrap up**
 
 And that's it. Everything you just saw — the three-to-one, the identity stuff, the
 six categories, all the correctness checks — none of it is hardcoded. It's all

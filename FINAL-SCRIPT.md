@@ -4,7 +4,7 @@ Read this straight down. **▶ RUN** lines are where you actually type a command
 Everything else is you just talking. Don't read it word-for-word or it'll sound
 stiff — know the beat and the numbers, then say it like you.
 
-- **Length:** aim ~7:15, hard stop before 8:00. Running long? Cut words, not runs.
+- **Length:** aim ~7:35, hard stop before 8:00. Running long? Cut words, not runs.
 - **On screen the whole time:** the line `Synthetic MVP — no customer data`.
 - **You only type two commands** (preflight, then present). `present` finishes in
   a few seconds and prints the proof block — it stays on screen, so everything
@@ -15,7 +15,7 @@ stiff — know the beat and the numbers, then say it like you.
 
 ---
 
-## 0 · Intro  (~0:40)
+## 0 · Intro  (~0:35)
 
 "Hey — I'm Varun. [← one line about you: what you do / your background.] I built
 this thing called Mahoraga and I want to walk you through it.
@@ -23,7 +23,7 @@ this thing called Mahoraga and I want to walk you through it.
 Short version: it's a memory engine for offensive security. I built it as one
 small service — Java, Postgres, a real transactional ingestion path — plus a set
 of deterministic synthetic fixtures that play out two engagements against the same
-target. There's no LLM anywhere in the core. It's all plain, reproducible logic,
+target. There's no LLM anywhere in the core; it's all plain, reproducible logic,
 so everything you're about to see comes out identical every single time I run it.
 
 Let me start with the problem, then just run it."
@@ -50,16 +50,24 @@ scripts/demo.sh preflight
 
 ---
 
-## 2 · One command  (~0:25)
+## 2 · What this command is actually doing  (~0:55)
 
-"One command does the whole thing. This next command runs everything — but that
-preflight I just ran is just me being careful: it checks Java, Docker, that the
-build's there, that the safety guards are good, and it changes nothing.
+"That preflight I just ran was just me being careful — it checks Java, Docker, the
+build, the safety guards, and it changes nothing.
 
-When I run this, it loads up Engagement 1. Every fact it learns is its own row,
-locked down, scoped to the tenant. And when the engagement's done, it draws a hard
-line that says 'this is everything we knew, as of right now.' Hang on to that line
-— it matters in a second."
+Now this next command is the whole trick, so let me tell you what it's actually
+doing. Think of it as standing in for the swarm — the thing that would normally go
+run the attacks. Real engagements are messy and random, so I've frozen the whole
+thing into a fixture: a fixed set of checks with fixed results. That's on purpose —
+it means the only thing that can change between runs is Mahoraga's memory.
+
+And it runs the entire second engagement twice — once with memory off, once with
+memory on — each against its own clean database, from the exact same starting point.
+So if anything's different at the end, you know it came from the memory and nothing
+else. It's a controlled experiment.
+
+It loads Engagement 1 first, and draws that hard line — everything we knew, as of
+right now. Keep that in mind, it matters in a sec."
 
 **▶ RUN:**
 ```
@@ -71,31 +79,35 @@ the proof block stays on screen for the rest of the demo.)*
 
 ---
 
-## 3 · The plans can't cheat, and the 3 → 1  (~1:15)
+## 3 · What T-A / T-B / T-C are, and the 3 → 1  (~1:20)
 
-*(point at: `Memory disabled: [T-A, T-B, T-C]`, `Memory enabled: [T-C, T-A, T-B]`,
-`Actions before regression detection: 3 -> 1`)*
+*(point at: `Candidate tests: [T-A, T-B, T-C]`, `Memory disabled: [T-A, T-B, T-C]`,
+`Memory enabled: [T-C, T-A, T-B]`, `Actions before regression detection: 3 -> 1`)*
 
-"Storing stuff is fine, whatever — the real question is whether the memory changes
-what you do next. So there's a planner, and it runs at that Engagement 1 line,
-before we know anything about the second engagement.
+"See these three up top — T-A, T-B, T-C? Those are just three checks the swarm could
+run in the second engagement — basically 'go re-test this, go re-test that.' And to
+the planner they're completely opaque. It's three IDs; it has no idea what any of
+them will find. That part matters.
 
-And this is the part people get wrong: it is so easy to accidentally let the future
-leak in — to let the planner peek at answers it shouldn't have yet. So the planner
-only ever sees opaque IDs. No labels, no results, nothing about how it turns out.
+So the planner's only job here is: what order do we run these in? With memory off it's
+got nothing to go on, so it just runs them in order — A, B, C. Turn memory on, and it
+looks back at Engagement 1 and notices one of these is pointing at something we'd
+already confirmed fixed. And something you fixed coming back is exactly what you want
+to check first — so it pulls that one to the front: C, A, B.
 
-With memory off, it just goes in order: A, B, C. Turn memory on, and it knows one of
-these got fixed last time and is worth double-checking, so it pulls that one to the
-front: C, A, B.
+Then both plans actually run, same frozen results baked in — and here's the payoff:
+the bug that came back, the memory version catches it on the very first action instead
+of the third. Three down to one.
 
-Then both plans actually run, against identical copies of the same starting point,
-same outcomes baked in. And the bug that came back — memory catches it on the very
-first move instead of the third. Three to one. And that 'zero events at planning'
-line is just me proving nothing leaked."
+And that's how you know it's the memory and not luck — both runs started from the
+identical state, with the identical outcomes. The one and only difference was whether
+the planner could see history. Same everything, better result. That's the memory
+engine doing its job. And that 'zero events at planning' line is just me proving the
+planner never got to peek at the second engagement's answers."
 
 ---
 
-## 4 · Same thing after everything changed  (~0:50)
+## 4 · Same thing after everything changed  (~0:55)
 
 *(point at: `Canonical Deployment unchanged: true`, `Weak-signal collision: AMBIGUOUS`)*
 
@@ -105,6 +117,11 @@ everything you'd normally key on changed. But the actual Deployment underneath i
 the same, so we keep it as the same asset, and the finding stays stuck to it. That's
 what lets you talk about a bug over time.
 
+And that's Mahoraga doing exactly what it's supposed to — tracking a finding across
+engagements even when the asset's name and IP change out from under it. In real
+Kubernetes that happens constantly: pods get rescheduled, IPs get recycled, names
+churn. The Deployment is the thing that's actually stable, so that's what we key on.
+
 And then the opposite case: when something's genuinely fuzzy — a reused DNS name with
 nothing solid behind it — it doesn't guess. It marks it ambiguous and flat-out
 refuses to let it move any numbers. It'd rather say 'I don't know' than smash two
@@ -112,7 +129,7 @@ things together that might not be the same thing."
 
 ---
 
-## 5 · Same facts, two lenses  (~1:25)
+## 5 · Same facts, two lenses  (~1:15)
 
 *(point at the `Stateless E2 view` block, then the `Memory-aware E1 + E2 view` block)*
 
@@ -134,7 +151,7 @@ came back, or that you straight-up forgot to retest something."
 
 ---
 
-## 6 · The boring stuff that has to be right  (~0:45)
+## 6 · The boring stuff that has to be right  (~0:40)
 
 *(point at the `Correctness` block)*
 
@@ -147,39 +164,30 @@ time. That's the part you have to be able to trust before any of the rest matter
 
 ---
 
-## 7 · Why I built this, and where it goes  (~1:15)
+## 7 · Why I built this, and where it goes  (~1:05)
 
 *(the `Scope` line is on screen)*
 
 "So — why did I actually build this. Honestly, mostly for fun. I'm pretty sure the
 folks at Armadin are already thinking about this, or already have something like it.
 But I kept coming back to this idea that there's a ton of untapped power in giving
-security systems real memory, and I just wanted to explore it myself. It was a
-genuinely interesting problem to sit with.
+security systems real memory, and I just wanted to explore it myself.
 
-And there's a bunch more I'd love to do with it. A few things I'm excited about:
+And there's more I'd love to do with it. Integration — I found this open-source
+project called T3MP3ST, a multi-agent offensive-security framework that runs the whole
+kill chain, recon to exploit to reporting. Really cool, but it has no memory — every
+run is a blank slate. Bolting Mahoraga onto something like that would be a natural
+fit, and it'd let me show the whole loop end to end against a real target instead of
+fixtures.
 
-Integration. I found this open-source project called T3MP3ST — it's a multi-agent
-offensive-security framework that runs the whole kill chain, recon, exploit, all the
-way to reporting. Really cool project. But it has no memory — every run is a blank
-slate. Bolting Mahoraga onto something like that would be a super natural fit, and it
-would let me show the whole loop end to end against a real target instead of fixtures.
-
-Then, architecture. I built this as one app to keep it simple, but the memory flow
-really wants to be split into separate pieces — a writer that owns ingestion and the
-transaction, a reader that just serves memory back out, a separate report job, a
-shared core library. Pull those apart and each part can scale and fail on its own.
-That's where this goes as it grows up.
-
-And then a longer list of stuff I find genuinely interesting: tracking how the
-environment itself drifts over time, not just the findings. Tradecraft memory —
-which techniques actually worked against which kinds of stacks. Real tamper-evident
-provenance with a hash chain. And eventually the hard, fascinating one — safely
-sharing learnings across customers without leaking anyone's data. Each of those is
-its own project.
-
-But the core — the memory engine, the part that has to be correct — that's what I've
-got working and proven right here."
+Architecture-wise, I built this as one app to keep it simple, but the memory flow
+really wants to be split into pieces — a writer that owns ingestion, a reader that
+serves memory back out, a separate report job — so each part can scale and fail on its
+own. And then a longer list I find genuinely interesting: tracking how the environment
+drifts over time, tradecraft memory for which techniques work against which stacks,
+real tamper-evident provenance, and eventually the hard one — safely sharing learnings
+across customers without leaking anyone's data. But the core — the memory engine, the
+part that has to be correct — that's what I've got working right here."
 
 ---
 

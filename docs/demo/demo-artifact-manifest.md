@@ -41,7 +41,7 @@ TASK-019 stays incomplete until they are filled and the video is reviewed.
 | Frame rate | 30 fps | **PENDING RECORDING** |
 | Audio codec | AAC, intelligible speech | **PENDING RECORDING** |
 | Terminal font | 16–18 pt minimum | **PENDING RECORDING** |
-| Duration | target ~7:15, hard max 7:59 | **PENDING RECORDING** |
+| Duration | target ~7:35, hard max 7:59 | **PENDING RECORDING** |
 | Captions | WebVTT synced to narration | [`demo-captions.vtt`](demo-captions.vtt) (draft; reconcile to take) |
 | Disclosure | visible "Synthetic MVP — no customer data" | **PENDING RECORDING** |
 

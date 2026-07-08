@@ -50,7 +50,7 @@ is the raw `present` command wall-clock; see the note below on narrated timing.
 These are mechanical rehearsals: they drive `scripts/demo.sh present`
 unnarrated to prove determinism, hash-stability, and clean teardown. The raw
 command runtime (~0:20) is far below the eight-minute ceiling. The
-[`demo-script.md`](demo-script.md) ~7:15 target is the **narrated** presentation
+[`demo-script.md`](demo-script.md) ~7:35 target is the **narrated** presentation
 length — the presenter reading each segment at normal pace while `present`
 streams its phases and prints the final proof block. That narrated timing is
 validated by a presenter read-through during recording preparation (TASK-019);
