@@ -1,4 +1,4 @@
-package dev.mahoraga.memory;
+package dev.mahoraga.memory.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;

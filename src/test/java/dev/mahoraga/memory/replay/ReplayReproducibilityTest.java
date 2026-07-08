@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dev.mahoraga.memory.MahoragaApplication;
-import dev.mahoraga.memory.MahoragaConfiguration;
+import dev.mahoraga.memory.config.MahoragaConfiguration;
 import dev.mahoraga.memory.boundary.BoundaryFactQuery;
 import dev.mahoraga.memory.boundary.BoundaryPosition;
 import dev.mahoraga.memory.boundary.KnowledgeBoundary;

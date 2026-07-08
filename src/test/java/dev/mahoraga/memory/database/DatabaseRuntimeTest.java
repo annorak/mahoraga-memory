@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
 import dev.mahoraga.memory.MahoragaApplication;
-import dev.mahoraga.memory.MahoragaConfiguration;
+import dev.mahoraga.memory.config.MahoragaConfiguration;
 import io.dropwizard.db.ManagedDataSource;
 import io.dropwizard.lifecycle.JettyManaged;
 import io.dropwizard.testing.ConfigOverride;

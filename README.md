@@ -212,7 +212,8 @@ mahoraga-memory/
 ├── config/mahoraga.yml         # Dropwizard config; DB via env substitution
 ├── scripts/demo.sh             # guarded demo orchestration
 ├── src/main/java/dev/mahoraga/memory/
-│   ├── MahoragaApplication.java, MahoragaConfiguration.java, MahoragaModule.java
+│   ├── MahoragaApplication.java # Dropwizard entry point and lifecycle
+│   ├── config/                  # typed configuration and explicit Guice bindings
 │   ├── contract/               # SourceEvent types, validation, canonical hashing
 │   ├── database/               # Dropwizard/JDBI runtime and Flyway startup
 │   ├── ingest/                 # inbox, stream binding, transaction, routing
@@ -224,6 +225,7 @@ mahoraga-memory/
 │   ├── planning/               # pre-engagement memory query and planner
 │   ├── reporting/              # stateless/memory reports and digests
 │   ├── fixture/                # synthetic dataset and runner-only manifest types
+│   ├── demo/                   # executed proof collection and semantic evidence
 │   └── commands/               # the guarded demo command
 ├── src/main/resources/
 │   ├── db/migration/           # V1 seven-table Flyway schema

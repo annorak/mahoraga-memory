@@ -29,10 +29,11 @@ and streams these phase headings as it goes:
 == Normalized stakeholder proof ==
 ```
 
-The two arms run in separate clean databases, so the phases take roughly two to
-three minutes of wall-clock while the presenter narrates the concept beats. The
-final `Normalized stakeholder proof` phase prints the full transcript and leaves
-it on screen; the proof walk-through (segments 5–8) reads directly from it.
+The two arms run in separate clean databases, but the guarded workflow normally
+finishes well before the narrated presentation. Its headings may stream before
+the related narration is complete. The final `Normalized stakeholder proof`
+phase prints the full transcript and leaves it on screen; the proof walk-through
+(segments 5–8) reads directly from it.
 
 ## Timing budget
 
@@ -83,8 +84,9 @@ narration; do not add material.
 
 ## Segment 3 — Leakage-free plans and executed `3 -> 1` (1:05–2:25, max 1:20)
 
-- **On-screen action:** narrate while `== Memory disabled ==` and
-  `== Memory enabled ==` run.
+- **On-screen action:** keep the terminal visible. If the arms are still running,
+  narrate as their headings stream; otherwise point to the `Steering` block in
+  the final transcript.
 - **Expected output cue (from the final transcript):**
   ```
   Candidate tests: [T-A, T-B, T-C]

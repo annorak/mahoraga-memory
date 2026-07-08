@@ -1,7 +1,7 @@
 package dev.mahoraga.memory.commands;
 
 import dev.mahoraga.memory.MahoragaApplication;
-import dev.mahoraga.memory.MahoragaConfiguration;
+import dev.mahoraga.memory.config.MahoragaConfiguration;
 import dev.mahoraga.memory.contract.CanonicalEncoding;
 import dev.mahoraga.memory.demo.DemoArmEvidence;
 import dev.mahoraga.memory.demo.DemoEvidence;

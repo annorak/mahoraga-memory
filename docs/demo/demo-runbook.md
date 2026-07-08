@@ -69,7 +69,7 @@ during recording.
 ## Expected evidence
 
 After a clean run, the normalized transcript is byte-identical to the accepted
-TASK-016B / TASK-017 evidence:
+release evidence:
 
 ```bash
 shasum -a 256 target/demo/transcript.txt

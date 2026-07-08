@@ -1,4 +1,4 @@
-package dev.mahoraga.memory;
+package dev.mahoraga.memory.config;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;

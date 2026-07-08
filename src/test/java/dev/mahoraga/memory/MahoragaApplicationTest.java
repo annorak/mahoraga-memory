@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import dev.mahoraga.memory.config.MahoragaConfiguration;
 import dev.mahoraga.memory.database.TestDatabase;
 import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.ResourceHelpers;

@@ -305,18 +305,20 @@ A simplified target layout is:
 ```text
 src/main/java/dev/mahoraga/memory/
 ├── MahoragaApplication.java
-├── MahoragaConfiguration.java
-├── MahoragaModule.java
+├── config/         # typed application config and explicit Guice composition
 ├── contract/       # SourceEvent types, parsing, validation, canonical hashing
-├── db/             # database bootstrap and narrowly shared database support
+├── database/       # database bootstrap and narrowly shared database support
 ├── ingest/         # inbox, stream binding, transaction, event routing
-├── identity/       # canonical Deployment and stable finding identity
+├── identity/       # canonical Deployment identity
+├── finding/        # stable finding identity and occurrences
+├── coverage/       # test attempts and coverage compatibility
 ├── boundary/       # engagement completion and visible-fact selection
 ├── posture/        # pure longitudinal fold
 ├── planning/       # memory features and deterministic planner
 ├── reporting/      # stateless/memory reports and semantic digests
 ├── fixture/        # synthetic datasets and runner-only manifest
-└── commands/       # local application/demo commands
+├── demo/           # executed proof collection and semantic evidence
+└── commands/       # guarded local demo command
 ```
 
 These ownership rules matter:

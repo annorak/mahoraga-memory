@@ -3,6 +3,8 @@ package dev.mahoraga.memory;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import dev.mahoraga.memory.commands.DemoCommand;
+import dev.mahoraga.memory.config.MahoragaConfiguration;
+import dev.mahoraga.memory.config.MahoragaModule;
 import dev.mahoraga.memory.database.DatabaseMigrator;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.SubstitutingSourceProvider;

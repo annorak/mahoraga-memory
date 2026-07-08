@@ -238,42 +238,46 @@ The target is one Maven module organized by capability:
 
 ```text
 mahoraga-memory/
+├── AGENTS.md
+├── README.md
 ├── mahoraga-design.md
 ├── mahoraga-mvp.md
 ├── mahoraga-mvp-implementation-plan.md
-├── tasks/
+├── mahoraga-mvp-junior-guide.md
 ├── pom.xml
-├── mvnw
+├── mvnw, mvnw.cmd
 ├── .mvn/
+├── config/
+│   └── mahoraga.yml
+├── scripts/
+│   └── demo.sh
 ├── src/
 │   ├── main/
 │   │   ├── java/dev/mahoraga/memory/
 │   │   │   ├── MahoragaApplication.java
-│   │   │   ├── MahoragaConfiguration.java
-│   │   │   ├── MahoragaModule.java
+│   │   │   ├── config/
 │   │   │   ├── contract/
-│   │   │   ├── commands/
-│   │   │   ├── db/
+│   │   │   ├── database/
 │   │   │   ├── ingest/
 │   │   │   ├── identity/
+│   │   │   ├── finding/
+│   │   │   ├── coverage/
+│   │   │   ├── boundary/
 │   │   │   ├── posture/
 │   │   │   ├── planning/
 │   │   │   ├── reporting/
-│   │   │   └── fixture/
+│   │   │   ├── fixture/
+│   │   │   ├── demo/
+│   │   │   └── commands/
 │   │   └── resources/
-│   │       └── db/migration/
+│   │       ├── db/migration/
+│   │       └── fixtures/v1/
 │   └── test/
-│       ├── java/
+│       ├── java/dev/mahoraga/memory/
 │       └── resources/
-├── config/
-│   └── mahoraga.yml
-├── fixtures/
-│   ├── engagement-1/
-│   ├── engagement-2/
-│   └── runner-manifest/
-├── scripts/
-└── docs/
-    └── demo/
+├── docs/
+│   └── demo/
+└── tasks/
 ```
 
 This is a package structure inside one application, not a set of deployable services or Maven modules.

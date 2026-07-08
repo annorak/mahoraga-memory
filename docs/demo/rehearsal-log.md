@@ -8,11 +8,10 @@ recorded here.
 ## Environment and identity
 
 - **Date:** 2026-07-07 (UTC)
-- **Application source revision:** `0e643f3` (merged `master`; this task changes
-  only `docs/`, which does not affect the build)
+- **Rehearsed application source revision:** `0e643f3`
 - **Build fingerprint (packaged JAR SHA-256, embedded in `evidence.json`):**
   `b2fc787769e6320d56426ba31dc24cbb8a4baf03c689ff7238de7b8f6dd739e1`
-- **Accepted normalized transcript SHA-256 (TASK-016B / TASK-017):**
+- **Accepted normalized transcript SHA-256:**
   `f81d12c3c33f7a616b1e80b8ca9062d584a8a827bfa5dac7673a56499513ddd6`
 - Prerequisites confirmed before rehearsing: `./mvnw -q verify` passed;
   `scripts/demo.sh preflight` printed `Preflight passed.`
@@ -30,7 +29,7 @@ is the raw `present` command wall-clock; see the note below on narrated timing.
 | 3 | `b2fc7877…d739e1` | `3627913d…8aaf24b` | `f81d12c3…9513ddd6` | 0:19 | PASS |
 
 - All three normalized transcript hashes match each other **and** the accepted
-  TASK-016B / TASK-017 hash.
+  transcript hash.
 - All three `evidence.json` hashes match each other (identical build; the JSON
   embeds the build fingerprint, so this digest is build-specific while the
   transcript is build-independent).
@@ -53,7 +52,7 @@ command runtime (~0:20) is far below the eight-minute ceiling. The
 [`demo-script.md`](demo-script.md) 6:30 target is the **narrated** presentation
 length — the presenter reading each segment at normal pace while `present`
 streams its phases and prints the final proof block. That narrated timing is
-validated by a presenter read-through during recording preparation (TASK-019);
+validated by a presenter read-through during recording preparation;
 it cannot be measured by an unnarrated command run.
 
 ## Transient environment observation
