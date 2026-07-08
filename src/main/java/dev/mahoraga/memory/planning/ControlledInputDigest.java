@@ -13,9 +13,9 @@ import java.util.List;
 /**
  * The digest both arms must share over their controlled inputs: tenant,
  * engagement, budget, candidates with targets and keys, and every executable
- * event id with its canonical content hash. Event lists are digested sorted by
- * id, so reordering manifest references cannot masquerade as a changed input,
- * while any changed frozen outcome (changed event content) changes the hash.
+ * event id with its canonical content hash. Event lists are sorted by id, so
+ * reference ordering does not change the digest. Any change to an event's
+ * content, including a frozen outcome, changes the digest.
  */
 final class ControlledInputDigest {
 

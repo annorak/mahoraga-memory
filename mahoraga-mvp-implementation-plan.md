@@ -1,17 +1,19 @@
 # Mahoraga MVP Implementation Plan
 
-Status: Approved  
-Implementation language: Java  
-Authoritative product specification: `mahoraga-mvp.md`  
-Production-direction reference: `mahoraga-design.md`
+- **Status:** MVP implementation complete; final demo recording pending
+- **Implementation language:** Java
+- **Authoritative product specification:** [`mahoraga-mvp.md`](mahoraga-mvp.md)
+- **Production direction:** [`mahoraga-design.md`](mahoraga-design.md)
 
 ---
 
 ## 1. Purpose
 
-This plan divides the Mahoraga MVP into small, dependency-ordered tasks. Each task is intended to fit within one fresh Codex or Claude Code session without relying on context compaction.
+This document records the dependency-ordered implementation plan used to
+deliver the Mahoraga MVP. Each task was designed as a small, independently
+reviewable change with explicit prerequisites and handoffs.
 
-The decomposition optimizes for:
+The plan was organized around:
 
 - Small, reviewable diffs.
 - One primary responsibility per task.
@@ -21,13 +23,14 @@ The decomposition optimizes for:
 - Tests delivered with the behavior they protect.
 - A deterministic, repeatable demonstration rather than a manually staged prototype.
 
-The master plan is the source of truth for task ordering and task status. Individual files under `tasks/` will contain the complete instructions for one implementation session.
+This plan records task ordering, scope, acceptance criteria, and completion
+gates.
 
 ## 2. Business outcome
 
 Armadin currently performs engagements that are individually useful but do not create durable longitudinal knowledge for the next engagement.
 
-The MVP will prove that Mahoraga can:
+The MVP proves that Mahoraga can:
 
 1. Remember findings and test coverage across engagements.
 2. Recognize the same Kubernetes Deployment after Pod name, UID, and IP churn.
@@ -81,8 +84,8 @@ Memory-aware E1 + E2 view:
 
 Correctness:
   Duplicate retry: NO_OP
-  Conflicting duplicate: REJECTED
-  Missing completion sequence: REPORT_BLOCKED
+  Conflicting duplicate: EVENT_CONTENT_REJECTED
+  Missing completion sequence: UNFINALIZED_REPORT_BLOCKED
   Shuffled ingestion report hash equal: true
   Transaction failure leaves partial state: false
 ```
@@ -133,7 +136,8 @@ All values must be generated from executed application behavior and persisted fa
 - HA, DR, load testing, and production SLOs.
 - MCP.
 
-An excluded feature requires a separate approved task and must not be added opportunistically.
+An excluded feature requires separate design and review; it must not be added
+opportunistically.
 
 ## 5. Language and stack decision
 
@@ -143,12 +147,12 @@ Java is the better choice for this MVP because:
 
 - The primary implementation risks are transaction correctness, deterministic ordering, identity, and lifecycle state—not Python integration.
 - Java records and enums make the event and lifecycle contracts explicit.
-- The user can review Java changes faster and more confidently.
+- Java aligns with the team's review and operational experience.
 - PostgreSQL transaction behavior can be tested directly with mature Java tooling.
 - Armadin's future Python integration is isolated behind the language-neutral JSON `SourceEvent` contract.
 - A later Python adapter can consume the same checked-in contract fixtures without changing the memory core.
 
-No Python service or duplicate Python model will be introduced in the core MVP.
+No Python service or duplicate Python model exists in the core MVP.
 
 ### Minimal stack
 
@@ -173,11 +177,9 @@ No Python service or duplicate Python model will be introduced in the core MVP.
 | Packaging | Maven Shade producing one executable JAR |
 | Demo database | Guarded `docker run` automation; no Docker Compose dependency |
 
-Task 001 will pin Dropwizard, Guice, Maven plugin, and test versions. TASK-003A
-will pin Flyway, PostgreSQL JDBC, Testcontainers, and the PostgreSQL test-image
-version. TASK-003B will add the Dropwizard JDBI3 module at the version managed
-by the Dropwizard 5.0.1 dependency BOM. Version changes after those tasks
-require an explicit reviewed diff.
+The repository pins Dropwizard, Guice, Maven plugins, Flyway, PostgreSQL JDBC,
+Testcontainers, the PostgreSQL test image, and the Dropwizard-managed JDBI3
+version. Version changes require an explicit reviewed diff.
 
 ### Application conventions
 
@@ -211,26 +213,21 @@ require an explicit reviewed diff.
 - No Guicey.
 - No Guice classpath scanning.
 - No application-owned HK2 bindings.
-- No customer-facing Jersey resource before a task requires one.
+- No customer-facing Jersey resource in the MVP.
 - No Liquibase.
 - No shared raw JDBC connection.
 - No reactive database access.
 - No mocks for PostgreSQL correctness.
 - No abstraction with only one implementation unless it represents an actual external boundary.
 
-## 6. Initial repository facts
+## 6. Repository baseline
 
-At planning time:
-
-- `mahoraga-memory` is not a Git repository.
-- Java 21 is installed.
-- Maven 3.9 is installed.
-- Docker is installed.
-- Docker Compose is not installed.
-- No application code or build files exist.
-- The only authoritative inputs are `mahoraga-mvp.md` and `mahoraga-design.md`.
-
-Git initialization and remote creation are not automatic. Task 001 must ask for explicit approval before initializing Git or configuring a remote.
+- Java 21 with the checked-in Maven Wrapper.
+- One Maven module and one executable application JAR.
+- PostgreSQL backed by the pinned `postgres:18.4-alpine` test image.
+- Docker for integration tests and the guarded local demonstration.
+- `mahoraga-mvp.md` defines MVP behavior.
+- `mahoraga-design.md` defines the larger production direction.
 
 ## 7. Target repository shape
 
@@ -243,7 +240,6 @@ mahoraga-memory/
 ├── mahoraga-design.md
 ├── mahoraga-mvp.md
 ├── mahoraga-mvp-implementation-plan.md
-├── mahoraga-mvp-junior-guide.md
 ├── pom.xml
 ├── mvnw, mvnw.cmd
 ├── .mvn/
@@ -275,45 +271,19 @@ mahoraga-memory/
 │   └── test/
 │       ├── java/dev/mahoraga/memory/
 │       └── resources/
-├── docs/
-│   └── demo/
-└── tasks/
+└── docs/
+    └── demo/
 ```
 
 This is a package structure inside one application, not a set of deployable services or Maven modules.
 
-The neutral base package `dev.mahoraga.memory` is the default because use of an Armadin-owned Java domain has not been authorized.
+The base package is `dev.mahoraga.memory`.
 
-## 8. Single-session task rules
+## 8. Implementation workflow
 
-Every task must satisfy these execution rules:
-
-1. Read:
-   - The assigned task file.
-   - Relevant sections of `mahoraga-mvp.md`.
-   - Relevant sections of `mahoraga-design.md`.
-   - This master plan.
-2. Inspect the actual repository state rather than trusting only prior completion notes.
-3. Verify prerequisite behavior before proposing changes.
-4. Show the complete proposed diff and wait for approval.
-5. Implement only the approved scope.
-6. Add or update tests in the same task as the behavior.
-7. Run targeted tests and the full currently available suite.
-8. Record exact commands and outcomes in the task's completion record.
-9. Do not commit or push without separate explicit approval.
-10. Stop if the task requires changing an authoritative contract.
-
-### Session-size limits
-
-A task should normally introduce:
-
-- One primary behavior or architectural concept.
-- No more than one database migration.
-- No more than approximately eight production files.
-- No more than approximately eight test files.
-- No unrelated refactoring.
-
-If the implementation cannot remain within that boundary, the session must stop and propose splitting the task.
+The MVP was delivered as small, dependency-ordered changes. Each change owned
+one primary behavior, included the tests for that behavior, verified its
+prerequisites, and recorded the handoff to the next step.
 
 ## 9. Dependency chain
 
@@ -419,7 +389,6 @@ Non-goals:
 - No domain models.
 - No ingestion behavior.
 - No domain REST resource.
-- No Git initialization without separate approval.
 
 ### TASK-002 — Typed SourceEvent contract and canonical hashing
 
@@ -1255,7 +1224,8 @@ Non-goals:
 
 Outcome:
 
-- Another engineer can build, test, run, and understand the MVP without prior session context.
+- Another engineer can build, test, run, and understand the MVP from a clean
+  checkout.
 
 Scope:
 
@@ -1294,7 +1264,8 @@ If a product defect appears, this task opens a focused corrective task rather th
 
 Outcome:
 
-- A reviewer-approved 6–7 minute script accurately explains the product value and executed evidence.
+- A rehearsed 6–7 minute script accurately explains the product value and
+  executed evidence.
 
 Scope:
 
@@ -1359,7 +1330,7 @@ Default format:
 - 30 fps.
 - H.264 MP4.
 - 16–18 point terminal font.
-- User narration with synchronized captions.
+- Presenter narration with synchronized captions.
 - Under eight minutes.
 - Visible “synthetic data only” disclosure.
 
@@ -1393,62 +1364,18 @@ The MP4 should not be committed to ordinary Git history. The default is an ignor
 
 No MVP acceptance criterion is considered complete solely because a unit test exists. Database-sensitive behavior requires real PostgreSQL integration tests, and business claims require end-to-end executed evidence.
 
-## 13. Individual task-file standard
+## 13. Implementation records
 
-Each `tasks/NNN-*.md` file must contain:
+Each implementation step recorded its dependencies, outcome, scope, invariants,
+changed files, validation results, deviations, risks, produced artifacts, and
+handoff. These working records supported delivery but are not release
+artifacts.
 
-1. Task metadata:
-   - ID.
-   - Title.
-   - Status.
-   - Dependencies.
-   - Expected session size.
-2. One-sentence outcome.
-3. Business value.
-4. Required reading with exact document sections.
-5. Expected repository state before starting.
-6. Commands that verify prerequisites.
-7. In-scope work.
-8. Explicit non-goals.
-9. Contracts and invariants owned by the task.
-10. Fixed decisions.
-11. Decisions that require user approval.
-12. Expected files or capabilities touched.
-13. Incremental implementation sequence.
-14. Partial-failure, retry, and restart considerations.
-15. Detailed testing matrix.
-16. Exact validation commands.
-17. Binary acceptance checklist.
-18. Suggested diff-review order.
-19. Completion record to fill in at task end:
-    - Files changed.
-    - Tests executed and results.
-    - Approved deviations.
-    - Remaining risks.
-    - Artifacts produced.
-20. Next-task handoff.
-21. Fresh-session kickoff prompt.
+## 14. Completion standard
 
-The task file must provide enough bounded context for a fresh coding session while linking to authoritative documents instead of copying the entire architecture.
-
-## 14. Task completion states
-
-Each task uses one status:
-
-- `NOT_STARTED`
-- `IN_PROGRESS`
-- `BLOCKED`
-- `READY_FOR_REVIEW`
-- `COMPLETE`
-
-A task becomes `COMPLETE` only when:
-
-- Its approved implementation is applied.
-- Its tests pass.
-- The full existing suite passes.
-- The user has reviewed the diff.
-- Its completion record is filled in.
-- No unresolved correctness issue is hidden in a later task.
+An implementation step was complete when its behavior and tests were applied,
+the focused and full suites passed, its completion record was filled in, and no
+unresolved correctness issue was deferred.
 
 ## 15. Final MVP release gate
 
@@ -1472,10 +1399,9 @@ The following defaults were approved with this plan:
 1. The MVP remains a local terminal demonstration; no REST or hosting.
 2. The Java package is `dev.mahoraga.memory`.
 3. The project is a standalone Maven repository.
-4. Git initialization will be separately approved during Task 001.
-5. The demo targets a mixed Armadin engineering/product audience.
-6. The user narrates the video; captions and transcript are also produced.
-7. The MP4 is stored outside ordinary Git history.
+4. The demo targets a mixed Armadin engineering/product audience.
+5. The presenter narrates the video; captions and transcript are also produced.
+6. The MP4 is stored outside ordinary Git history.
 
-Changing any of these defaults may alter Tasks 001, 016A, 016B, 018, or 019
-but does not change the core memory architecture.
+Changing these defaults requires revalidating the affected demo, evidence, and
+release assumptions; it does not change the core memory architecture.

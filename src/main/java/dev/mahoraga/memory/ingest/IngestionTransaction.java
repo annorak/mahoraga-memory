@@ -28,11 +28,11 @@ public final class IngestionTransaction {
 
   /**
    * Domain work executed on first delivery inside the ingestion transaction.
-   * Implementations must be deterministic and database-only through the given
-   * handle — no network, filesystem, messaging, or other external side effects
-   * — because the transaction can roll back and a committed exact retry never
-   * reruns the work. This is a narrow transaction-participation boundary for
-   * the concrete handlers of later capabilities, not a general plugin API.
+   * Implementations must be deterministic and use only the supplied database
+   * handle. Network, filesystem, messaging, and other external side effects are
+   * not allowed because the transaction can roll back and a committed exact
+   * retry never reruns the work. This boundary is for concrete ingestion
+   * handlers, not a general plugin API.
    */
   @FunctionalInterface
   public interface DatabaseWork {

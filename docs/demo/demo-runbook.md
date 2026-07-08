@@ -9,6 +9,8 @@ script; nothing here is improvised.
 
 - macOS or Linux on the supported baseline: **Java 21**, the bundled **Maven
   Wrapper** (`./mvnw`), and **Docker** with a running daemon.
+- **Bash**, `lsof`, `od`, `sed`, and `tr`.
+- Either `shasum` or `sha256sum`.
 - The pinned image present locally (the demo runs with `--pull=never`):
   `docker pull postgres:18.4-alpine`.
 - Local TCP port `127.0.0.1:55432` free for the guarded demo database.
@@ -68,11 +70,16 @@ during recording.
 
 ## Expected evidence
 
-After a clean run, the normalized transcript is byte-identical to the accepted
-release evidence:
+After a clean run, the normalized transcript is byte-identical to the expected
+deterministic evidence:
 
 ```bash
+# macOS
 shasum -a 256 target/demo/transcript.txt
+
+# Linux
+sha256sum target/demo/transcript.txt
+
 # f81d12c3c33f7a616b1e80b8ca9062d584a8a827bfa5dac7673a56499513ddd6
 ```
 
@@ -93,7 +100,7 @@ High-level output checkpoints (all in the printed transcript):
 
 ## Safe retry
 
-Retry only through the guarded demo script — never by hand.
+Retry only through the guarded demo script; never by hand.
 
 ```bash
 scripts/demo.sh preflight
@@ -106,7 +113,7 @@ property (name `mahoraga-memory-demo`, label `dev.mahoraga.memory.synthetic=true
 image `postgres:18.4-alpine`, database `mahoraga_demo`, binding exactly
 `127.0.0.1:55432`, ephemeral `tmpfs` only, restart `no`, default bridge network,
 image-default entrypoint/command). Because storage is `tmpfs`, stopping the
-container discards demo data — there is nothing to clean up by hand.
+container discards demo data; there is nothing to clean up by hand.
 
 ## Failure decision tree
 
@@ -142,8 +149,11 @@ confirm the image with `docker image ls postgres`, then re-run
 
 ## Post-run checks
 
+Run the hash command available on your system:
+
 ```bash
-shasum -a 256 target/demo/transcript.txt   # equals the accepted hash above
+shasum -a 256 target/demo/transcript.txt   # macOS
+sha256sum target/demo/transcript.txt       # Linux
 docker container inspect mahoraga-memory-demo --format '{{.Id}}'  # expect: no such container
 lsof -nP -iTCP:55432 -sTCP:LISTEN || echo "port free"            # expect: port free
 ```

@@ -1,6 +1,6 @@
-# Mahoraga Memory — MVP
+# Mahoraga Memory MVP
 
-Mahoraga is a durable memory engine for repeated, authorized offensive-security
+Mahoraga is a durable memory engine for repeated offensive-security
 engagements. Without memory, every engagement is an isolated point-in-time scan
 that cannot say whether a past weakness persists, was verified fixed, regressed,
 or was simply never retested. This MVP proves the core differentiator with the
@@ -18,21 +18,21 @@ memory-aware planner, and reproducible reports.
 ## What it demonstrates
 
 Every claim below is produced by executed application behavior over persisted
-facts — not printed from hard-coded expected values:
+facts, not printed from hard-coded expected values:
 
-- **Stable Deployment identity** across Pod UID, name, and IP churn, with a
-  weak-signal collision correctly withheld as `AMBIGUOUS`.
-- **Exact source-event retry/conflict handling** — an identical retry is a
+- **Stable Deployment identity:** Pod UID, name, and IP churn do not change the
+  canonical Deployment, and a weak-signal collision is withheld as `AMBIGUOUS`.
+- **Exact source-event retry/conflict handling:** An identical retry is a
   no-op; a changed retry or reused stream position is rejected.
-- **Coverage-aware verified resolution** — only a compatible, completed,
+- **Coverage-aware verified resolution:** Only a compatible, completed,
   not-detected test resolves a finding; absence never proves a fix.
-- **Six longitudinal classifications** — `NEW`, `STILL_OPEN`,
+- **Six longitudinal classifications:** `NEW`, `STILL_OPEN`,
   `VERIFIED_RESOLVED`, `REGRESSED`, `NOT_RETESTED`, `INCONCLUSIVE`.
-- **Leakage-free deterministic planning** — the planner sees no Engagement 2
+- **Leakage-free deterministic planning:** The planner sees no Engagement 2
   outcomes, runner labels, or the eventual classification.
-- **Executed `3 -> 1` regression-discovery improvement** — memory moves the
+- **Executed `3 -> 1` regression-discovery improvement:** Memory moves the
   regression check from action three to action one.
-- **Reproducible reports and shuffled-ingestion convergence** — the same facts
+- **Reproducible reports and shuffled-ingestion convergence:** The same facts
   produce the same semantic report regardless of arrival order.
 
 ## Architecture
@@ -75,6 +75,8 @@ tenant-qualified tables:
   (`./mvnw`). It does require Maven `>= 3.9` if you use your own.
 - **Docker** with a running daemon, for the demo and for Testcontainers-backed
   integration tests.
+- **Bash**, `lsof`, `od`, `sed`, and `tr`, which the demo preflight checks.
+- Either `shasum` or `sha256sum` for artifact verification.
 - The pinned PostgreSQL image present locally. The demo starts containers with
   `--pull=never`, so pull it once first:
 
@@ -194,13 +196,13 @@ manual-recovery guidance) on any mismatch:
 - label `dev.mahoraga.memory.synthetic=true`
 - image `postgres:18.4-alpine`
 - database `mahoraga_demo`, host binding exactly `127.0.0.1:55432`
-- ephemeral `tmpfs` storage only — no bind mounts, volumes, or inherited volumes
+- ephemeral `tmpfs` storage only; no bind mounts, volumes, or inherited volumes
 - restart policy `no`, default bridge network, image-default entrypoint/command
 
 Signals (`INT`, `TERM`, `HUP`) and normal exit revalidate and stop the guarded
 container, preserving a non-zero status on failure. A later `preflight` recovers
 an orphaned container only when every guard still matches; otherwise it refuses.
-Because storage is `tmpfs`, stopping the container discards all demo data — there
+Because storage is `tmpfs`, stopping the container discards all demo data; there
 is nothing to clean up by hand in the normal path.
 
 ## Project layout
@@ -253,8 +255,6 @@ mahoraga-memory/
   classifications; the memory view adds regression detection, verified
   resolution, and honest missing-retest coverage that a stateless scan
   structurally cannot produce.
-
-Deeper explanations live in [`mahoraga-mvp-junior-guide.md`](mahoraga-mvp-junior-guide.md).
 
 ## Acceptance coverage
 
@@ -310,22 +310,18 @@ This MVP intentionally does **not** provide, claim, or validate:
   embeddings/vector search, or a live Kubernetes cluster.
 - Any testing against customer data.
 
-The production direction for these — real source discovery and adapters, change
-streams, evidence lifecycle, multi-tenant hardening, and gated cross-tenant
-learning — is described in the design document's roadmap, not built here.
+The production direction for these areas, including real source discovery and
+adapters, change streams, evidence lifecycle, multi-tenant hardening, and gated
+cross-tenant learning, is described in the design document's roadmap rather
+than implemented here.
 
 ## Reviewer path
 
 Read in this order:
 
-1. [`mahoraga-mvp.md`](mahoraga-mvp.md) — authoritative product behavior and
+1. [`mahoraga-mvp.md`](mahoraga-mvp.md): authoritative product behavior and
    acceptance tests.
-2. [`mahoraga-mvp-implementation-plan.md`](mahoraga-mvp-implementation-plan.md) —
-   build decisions, task decomposition, and the final release gate.
-3. [`mahoraga-design.md`](mahoraga-design.md) — the larger production direction
+2. [`mahoraga-design.md`](mahoraga-design.md): the larger production direction
    and deferred-to-production register.
-4. [`mahoraga-mvp-junior-guide.md`](mahoraga-mvp-junior-guide.md) — a
-   first-principles walkthrough of every concept above.
-
-Per-task scope and completion records live under `tasks/` (excluded from version
-control by owner decision).
+3. [`mahoraga-mvp-implementation-plan.md`](mahoraga-mvp-implementation-plan.md):
+   historical implementation decisions and the final release gate.

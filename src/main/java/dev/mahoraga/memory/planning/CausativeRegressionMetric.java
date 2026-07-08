@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Derives {@code actions_before_regression_detection} purely from
+ * Derives {@code actions_before_regression_detection} using only
  * boundary-selected persisted facts and the recorded execution: the one-based
  * executed position of the single candidate whose recorded occurrence makes a
  * previously verified-resolved finding fold to {@code REGRESSED}. No candidate

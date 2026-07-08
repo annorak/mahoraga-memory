@@ -8,11 +8,11 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * The immutable semantic result of one executed experiment arm. Every value is
- * derived from persisted state or explicit inputs — never from clocks, labels,
- * or expected outputs — and construction rejects partial evidence, so a failed
- * or incomplete arm cannot be represented as success. Digests use TASK-011's
- * canonical semantic forms, which exclude random internal IDs.
+ * Semantic evidence for one executed experiment arm. Producers derive values
+ * from persisted state or explicit inputs, not clocks, labels, or expected
+ * outputs. Construction validates required fields and candidate/event
+ * relationships; {@link SteeringEvidenceComparator} validates the cross-arm
+ * proof. Canonical fact and report digests exclude random internal IDs.
  */
 public record SteeringArmEvidence(
     ArmMode armMode,

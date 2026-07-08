@@ -73,7 +73,7 @@ public class MahoragaApplication extends Application<MahoragaConfiguration> {
     }
   }
 
-  /** The single application injector; later tasks and tests obtain components from it. */
+  /** Returns the application injector after startup completes. */
   public Injector getInjector() {
     return Objects.requireNonNull(injector, "injector requested before run() completed");
   }

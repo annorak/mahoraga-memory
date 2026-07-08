@@ -46,9 +46,9 @@ import org.junit.jupiter.api.Test;
  * fixed-seed sequential shuffles into fresh databases converge to the baseline
  * canonical reports (internal UUIDs may differ; semantic bytes may not), and
  * same-database recomputation is a fresh read/fold/render inside a PostgreSQL
- * READ ONLY transaction — the narrowest real boundary proving no identity
- * matching upsert or any other write runs on that path. Canonical report
- * bytes fix the semantic digest, which TASK-011 owns and already proves.
+ * READ ONLY transaction. The transaction prevents identity-matching upserts
+ * and every other write on that path. Canonical report bytes fix the semantic
+ * digest.
  */
 class ReplayReproducibilityTest {
 

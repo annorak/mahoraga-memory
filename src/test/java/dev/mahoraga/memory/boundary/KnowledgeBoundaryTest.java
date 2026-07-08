@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Proves the boundary value and codec contract: caller order never affects
  * equality, canonical bytes, or the digest; invalid boundaries reject before
- * any use; and the canonical shape matches the reviewed golden digest exactly.
+ * any use; and the canonical shape matches the fixed golden digest exactly.
  */
 class KnowledgeBoundaryTest {
 

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-/** The validated, normalized stakeholder proof produced from two isolated arm files. */
+/** Normalized evidence produced from two isolated demo-arm files. */
 @JsonPropertyOrder({
   "evidence_schema_version", "build_fingerprint", "candidate_ids",
   "control_executed_order", "memory_executed_order",

@@ -9,9 +9,9 @@ import java.util.Objects;
  * One trusted-context-scoped dataset of ordered source events, each already
  * decoded, validated, canonicalized, and hashed by the production
  * {@link dev.mahoraga.memory.contract.SourceEventCodec}. Trusted tenant and
- * engagement identity live here, never inside a payload, so the fixture runner
- * supplies them exactly as a future source adapter would. The event list is
- * held in arrival order for deterministic downstream ingestion.
+ * engagement identity live here, never inside a payload. The fixture runner
+ * supplies this trusted context, and the event list stays in arrival order for
+ * deterministic ingestion.
  */
 public record FixtureEventSet(TrustedContext trustedContext, List<CanonicalSourceEvent> events) {
 

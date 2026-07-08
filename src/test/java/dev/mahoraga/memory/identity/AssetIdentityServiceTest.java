@@ -36,8 +36,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
- * Proves resolution policy v1 against real PostgreSQL through TASK-004's
- * ingestion transaction: authoritative insert-or-read identity, churn-proof
+ * Proves resolution policy v1 through the PostgreSQL ingestion transaction:
+ * authoritative insert-or-read identity, churn-proof
  * reuse, ambiguous weak collisions with no canonical asset, rejection of
  * UID-less no-candidate input, and atomic rollback with the source event.
  */

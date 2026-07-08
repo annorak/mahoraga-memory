@@ -14,9 +14,9 @@ import org.jdbi.v3.core.Handle;
  * Finding match policy version 1: identity is exactly {@code (tenant, canonical
  * asset, vuln_class, normalized_location_signature, match_key_version)} with
  * server-supplied version 1 and exact string matching of canonical inputs. The
- * four-part verification baseline recorded at creation is immutable — there is
- * deliberately no finding-update SQL — and every accepted detection appends one
- * occurrence. Runs entirely on the active TASK-004 ingestion handle.
+ * four-part verification baseline recorded at creation is immutable. There is
+ * deliberately no finding-update SQL, and every accepted detection appends one
+ * occurrence. All work uses the caller's active ingestion handle.
  */
 public final class FindingIdentityService {
 
@@ -36,8 +36,8 @@ public final class FindingIdentityService {
   /**
    * Resolves the authoritative asset, inserts-or-reads the finding for the
    * match identity, enforces the recorded baseline, and appends one immutable
-   * occurrence for this source event. Any failure propagates so TASK-004 rolls
-   * back the source event with every write made here.
+   * occurrence for this source event. Any failure propagates, so the ingestion
+   * transaction rolls back the source event and every write made here.
    */
   public FindingId recordFindingObservation(
       Handle handle, TrustedContext context, String sourceEventId, FindingObservation payload) {

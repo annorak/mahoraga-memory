@@ -30,7 +30,7 @@ import java.util.Objects;
 import java.util.Random;
 import org.jdbi.v3.core.Jdbi;
 
-/** Derives demo-only proof values from the completed arm's persisted state and real APIs. */
+/** Derives demo-only proof values from persisted state and production services. */
 final class DemoProofCollector {
 
   private static final long REPLAY_SHUFFLE_SEED = 42L;

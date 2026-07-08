@@ -1,9 +1,9 @@
 package dev.mahoraga.memory.ingest;
 
 /**
- * Binary outcome of one ingestion transaction: the event was persisted now with
- * its domain work, or it was an exact committed retry and nothing ran. Conflicts
- * are never results; they throw {@link SourceEventConflictException}.
+ * Outcome of one ingestion transaction: the event and its domain work were
+ * committed, or an exact committed retry skipped the domain work. Conflicts
+ * throw {@link SourceEventConflictException} instead of returning a result.
  */
 public enum IngestResult {
   ACCEPTED,

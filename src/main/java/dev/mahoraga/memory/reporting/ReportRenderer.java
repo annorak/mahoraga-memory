@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The two renderings of one report DTO: compact fixed-order canonical UTF-8
+ * The two renderings of one report: compact fixed-order canonical UTF-8
  * JSON for hashes and evidence, and concise human text for the demo. The
  * report semantic digest is lowercase SHA-256 of the canonical JSON, so it
  * differs between views while the shared current-engagement fact digest stays

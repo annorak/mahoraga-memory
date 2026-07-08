@@ -28,14 +28,14 @@ import org.junit.jupiter.api.Test;
  * database: every resource parses and cross-validates through the production
  * loader, per-stream positions are contiguous with one marker, detected
  * candidates carry both their occurrence and attempt inputs, the planner-safe
- * projection exposes no runner vocabulary, and one reviewed semantic digest is
- * stable across formatting yet sensitive to any semantic change.
+ * projection exposes no runner vocabulary, and the semantic digest is unchanged
+ * by formatting but changes with semantics.
  */
 class FixtureDatasetTest {
 
   /**
-   * Reviewed golden over all canonical source hashes in stream/sequence order
-   * plus the canonical runner-manifest semantics. Regenerate deliberately only
+   * Golden digest over all canonical source hashes in stream/sequence order
+   * plus the canonical runner-manifest semantics. Update deliberately only
    * when a fixture event, candidate mapping, frozen outcome, or scenario
    * expectation intentionally changes.
    */

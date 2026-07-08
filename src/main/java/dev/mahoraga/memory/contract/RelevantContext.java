@@ -13,8 +13,8 @@ import java.util.Map;
  * The stable logical check context shared by finding observations and test
  * attempts. Ephemeral Pod names, Pod UIDs, and IP addresses do not belong
  * here; an explicitly address-bound check carries its exact target address.
- * Mahoraga computes the context fingerprint later; the source never supplies
- * a hash.
+ * Mahoraga computes the context fingerprint during ingestion; the source never
+ * supplies a hash.
  */
 public record RelevantContext(
     @JsonProperty("protocol") @NotBlank String protocol,

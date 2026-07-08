@@ -13,10 +13,9 @@ import java.util.Objects;
  * The runner-side execution lookup projected from the runner manifest: for
  * each opaque candidate, the ordered source events its action ingests, plus
  * the planner-dataset events no candidate references (churn observations the
- * engagement needs for completeness). Like {@link PlannerCandidateSet} it
- * carries no scenario label and no frozen-outcome map — outcomes exist only as
- * ordinary source-event content — so the experiment arm can execute a plan
- * without ever holding runner answers.
+ * engagement needs for completeness). Like {@link PlannerCandidateSet}, it
+ * carries no scenario label or separate outcome map. Outcomes remain ordinary
+ * source-event content, and those event payloads never enter planner inputs.
  */
 public record CandidateActionSet(
     TrustedContext trustedContext,

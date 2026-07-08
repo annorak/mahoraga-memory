@@ -22,7 +22,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 
-/** Proves the V1 schema invariants against real PostgreSQL. Fails, never skips, without Docker. */
+/**
+ * Covers the V1 schema invariants against real PostgreSQL. Requires Docker and
+ * fails rather than skipping when Docker is unavailable.
+ */
 @Testcontainers
 class PostgreSqlSchemaTest {
 

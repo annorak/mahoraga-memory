@@ -12,7 +12,7 @@ import java.util.Objects;
  * the tenant-safe knowledge-boundary hash, the current engagement, the fixed
  * policy bundle version, the current-engagement semantic fact digest, and one
  * view-specific summary. No generated timestamp or operational value exists
- * here, so equal facts always produce an equal report.
+ * here, so equal semantic inputs always produce an equal report.
  */
 public record Report(
     ReportView view,
@@ -135,7 +135,7 @@ public record Report(
 
   /**
    * One semantic finding's longitudinal result: its stable identity components
-   * plus the three separate posture dimensions from the TASK-009 fold.
+   * plus the three separate posture dimensions from the posture fold.
    */
   public record FindingResult(
       String clusterId,

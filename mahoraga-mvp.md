@@ -1,26 +1,12 @@
 # Mahoraga — MVP Build Spec
 
-**Companion to `mahoraga-design.md`.** The core MVP is **one application + one Postgres + deterministic fixtures + a memory-aware planner**, proving the differentiator with the smallest thing that can prove it. Everything heavier is a named later slice.
+**Companion to [`mahoraga-design.md`](mahoraga-design.md).** The core MVP is **one application + one Postgres + deterministic fixtures + a memory-aware planner**, proving the differentiator with the smallest thing that can prove it. Everything heavier is a named later slice.
 
 The core question:
 
 > Can longitudinal memory change the second engagement and correctly distinguish **new, still-open, verified-resolved, regressed, not-retested, and inconclusive** findings — and can we show, without leakage, that memory *changed the plan*, not just the report?
 
 ---
-
-## What changed in this revision
-
-Applied the latest review's MVP corrections:
-
-- **The steering experiment is leakage-free and exact.** Both plans execute against isolated clones of the same finalized Engagement 1 state, use opaque candidate IDs and a runner-only outcome map, and differ only in whether memory features are supplied.
-- **`F-REGRESS` chronology is explicit:** its negative verification happens in Engagement 1, before the planner boundary — not "before/within Engagement 2."
-- **The consumer-defined internal event contract is aligned with the production design:** `source_event_id` + `event_type` + server-computed `canonical_source_hash` (the fixture never supplies a hash).
-- **`source_events` is the inbox** (no separate inbox table); resolution outcome is stored on `asset_observations` (no separate decision table).
-- **One canonical resource kind (Deployment),** identified by `cluster_id + resource_kind + resource_uid`.
-- **Asset and finding identity are database-backed:** first authoritative observations create confirmed assets, and a versioned finding match key correlates engagements without fixture IDs.
-- **Coverage compatibility is the executable policy-v1 predicate**, with stable logical context under Pod/IP churn and one-dimension-mismatch acceptance cases.
-- **Stream binding, transaction-rollback tests, completion-marker semantics, and report reproducibility** are specified.
-- **No tradecraft, no recorded-authorization claim, no tamper-evident-provenance claim** in the core MVP (all deferred), keeping wording consistent with the production design.
 
 ## `maho-gate` decision: excluded from the core MVP
 

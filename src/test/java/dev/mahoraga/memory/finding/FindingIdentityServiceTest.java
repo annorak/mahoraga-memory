@@ -34,10 +34,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /**
- * Proves finding match policy v1 against real PostgreSQL through TASK-004's
- * transaction with TASK-005's resolver on the same handle: exact five-part
- * identity, immutable four-part baseline, one occurrence per detection, and
- * atomic rollback with the source event.
+ * Proves finding match policy v1 through the PostgreSQL ingestion transaction
+ * with asset resolution on the same handle: exact five-part identity,
+ * immutable four-part baseline, one occurrence per detection, and atomic
+ * rollback with the source event.
  */
 class FindingIdentityServiceTest {
 

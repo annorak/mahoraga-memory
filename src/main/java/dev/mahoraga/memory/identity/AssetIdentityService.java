@@ -16,8 +16,8 @@ import org.jdbi.v3.core.Handle;
  * authoritative {@code (tenant, cluster, Deployment, resource UID)} key creates
  * or reuses exactly one recorded asset; UID-less observations that collide with
  * confirmed assets on exact DNS or an exact label pair are held as ambiguous
- * with no canonical asset; anything else is rejected. Both operations run on
- * the active TASK-004 ingestion handle and never open their own transaction.
+ * with no canonical asset; anything else is rejected. Both operations use the
+ * caller's active ingestion handle and never open their own transaction.
  */
 public final class AssetIdentityService {
 
@@ -42,8 +42,8 @@ public final class AssetIdentityService {
    * Insert-or-read of the confirmed canonical asset for an authoritative
    * Deployment key. The candidate row loses any uniqueness race silently and
    * the recorded winner is read back, so callers never see a losing UUID.
-   * Reusable by later finding and test-attempt handlers, whose payloads carry
-   * this key independently.
+   * Finding and test-attempt handlers reuse this method because their payloads
+   * carry the same key.
    */
   public AssetId resolveAuthoritativeDeployment(
       Handle handle,
@@ -113,8 +113,8 @@ public final class AssetIdentityService {
   /**
    * Exact tenant-local weak match against prior RESOLVED observations in the
    * same cluster and kind: DNS equality or at least one exact label key/value
-   * pair. Existence alone decides — one or more candidates is ambiguous, so no
-   * ranking or first-match behavior exists to get wrong.
+   * pair. Any match makes the observation ambiguous; candidates are never
+   * ranked or selected.
    */
   private boolean hasConfirmedWeakCandidate(
       Handle handle, TrustedContext context, AssetObservation payload) {

@@ -153,8 +153,8 @@ class BoundaryFactQueryTest {
     assertEquals(ExecutionStatus.COMPLETED, attempt.executionStatus());
     assertEquals(TestResult.NOT_DETECTED, attempt.result());
     assertEquals(occurrence.canonicalAssetId(), attempt.canonicalAssetId());
-    // Identical relevant context yields the identical stored fingerprint on
-    // both sides of the future compatibility comparison.
+    // Identical relevant context yields the same stored fingerprint for both
+    // sides of the compatibility comparison.
     assertEquals(occurrence.relevantContextHash(), attempt.relevantContextHash());
   }
 

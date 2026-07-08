@@ -246,7 +246,7 @@ class PreEngagementMemoryQueryTest {
 
   /**
    * A finalized second Deployment of the same tenant whose open finding shares
-   * REGRESS's verification key, so cross-asset contamination has a real target.
+   * REGRESS's verification key. This history exposes cross-asset contamination.
    */
   private static final String SECOND_DEPLOYMENT_HISTORY =
       """
@@ -306,8 +306,8 @@ class PreEngagementMemoryQueryTest {
 
   /**
    * A finalized parallel tenant with the same authoritative Deployment key and
-   * verification key but no verified resolution, so tenant isolation has a
-   * real target on both sides.
+   * verification key but no verified resolution. This history exposes tenant
+   * leakage through either identity dimension.
    */
   private static final String OTHER_TENANT_HISTORY =
       """

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * Pure canonicalization proofs: golden semantic fact bytes and digest, input
  * order and internal-UUID independence, semantic-change sensitivity, loud
  * failure on unknown or duplicate rows, the fixed-order report JSON for both
- * views, and human text carrying the same semantic values as the DTO.
+ * views, and human text carrying the same semantic values as the report.
  */
 class ReportCanonicalizationTest {
 

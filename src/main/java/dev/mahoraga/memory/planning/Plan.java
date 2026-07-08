@@ -7,8 +7,8 @@ import java.util.Set;
 
 /**
  * The deterministic planner output: at most {@code min(action budget,
- * candidate count)} unique candidate ids in execution order. A value only;
- * executing the plan belongs to later orchestration.
+ * candidate count)} unique candidate ids in execution order. This value does
+ * not execute the plan.
  */
 public record Plan(List<String> orderedCandidateIds) {
 

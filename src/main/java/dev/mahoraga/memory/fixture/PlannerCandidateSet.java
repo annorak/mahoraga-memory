@@ -6,13 +6,11 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The only fixture type the planner is permitted to see. It exposes, by
- * construction, the trusted tenant, an action budget, and for each opaque
- * candidate its authoritative Deployment target and verification key. It holds
- * no scenario label, frozen outcome, source-event reference, classification, or
- * E2 fact, so no runner knowledge or future result can reach planning through
- * it. It is produced only by projecting a {@link RunnerManifest}; the planner
- * never receives the manifest itself.
+ * The fixture projection used to build planner inputs. It contains the trusted
+ * tenant, action budget, and each opaque candidate's authoritative Deployment
+ * target and verification key. It contains no scenario label, frozen outcome,
+ * source-event reference, classification, or E2 fact. It is projected from a
+ * {@link RunnerManifest}; planner inputs never receive the manifest itself.
  */
 public record PlannerCandidateSet(
     String tenantId, int actionBudget, List<PlannerCandidate> candidates) {

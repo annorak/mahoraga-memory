@@ -11,9 +11,10 @@ import java.util.Map;
  * Context fingerprint policy version 1: lowercase SHA-256 over compact UTF-8
  * canonical JSON in the fixed order {@code protocol, port, normalized_route,
  * parameters, is_address_bound, target_address?}. Parameters sort lexically
- * with TASK-002's scalar rules and absent means {@code {}}; the target address
- * appears only for an explicitly address-bound check. Validated domain strings
- * are preserved exactly — never trimmed or case-folded here.
+ * with the source contract's scalar rules; absent parameters mean {@code {}}.
+ * The target address appears only for an explicitly address-bound check.
+ * Validated domain strings are kept exactly as supplied and are not trimmed or
+ * case-folded here.
  */
 public final class RelevantContextFingerprint {
 

@@ -1,6 +1,6 @@
 # Mahoraga Memory MVP — Demo Script
 
-A reviewer-approved 6–7 minute presentation. It connects the executed synthetic
+A rehearsed 6–7 minute presentation script. It connects the executed synthetic
 evidence to Armadin's business value without overstating integration, scale,
 privacy, or production maturity.
 
@@ -222,7 +222,7 @@ narration; do not add material.
 - Do **not** reveal the runner-only outcome map or the expected candidate outcomes
   (T-A detected, T-B not detected, T-C detected) before the plans are shown in
   Segment 3. The candidates are opaque until then.
-- Use only the approved claims: "In this deterministic synthetic MVP…", "the
+- Use only the supported claims: "In this deterministic synthetic MVP…", "the
   executed history measured regression discovery at action three versus one", "the
   same E2 facts gain lifecycle meaning when E1 memory is in scope", "a completed
   compatible negative verifies resolution; absence does not", "the internal event

@@ -24,10 +24,10 @@ import java.util.UUID;
  * its lowercase SHA-256 digest over compact fixed-order UTF-8 JSON. Internal
  * random UUIDs are replaced by the stable identity they stand for: the
  * authoritative Deployment key for assets, and the match components already on
- * each occurrence for findings. Facts sort by the TASK-009 domain order with
- * fact kind as the final tie-break, so caller order, arrival order, and
+ * each occurrence for findings. Facts sort by the posture fold's domain order
+ * with fact kind as the final tie-break, so caller order, arrival order, and
  * restart can never change the bytes. Operational timestamps, trace data, and
- * fixture vocabulary are structurally absent from the input facts.
+ * fixture vocabulary are not included in the input facts.
  */
 public final class SemanticFactSet {
 
@@ -48,7 +48,7 @@ public final class SemanticFactSet {
   /**
    * Builds the canonical set. Every fact's internal asset id must resolve to
    * an authoritative key, and two facts may never canonicalize to the same
-   * semantic row; both defects fail loudly instead of being dropped.
+   * semantic row. Both errors throw instead of dropping data.
    */
   public static SemanticFactSet of(List<SelectedFact> facts, Map<UUID, AssetKey> assetKeys) {
     Objects.requireNonNull(facts, "facts");

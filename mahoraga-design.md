@@ -2,34 +2,12 @@
 
 **A memory engine for AI-driven offensive security.**
 
-Status: Production design in draft (revisions from the latest review applied) · Owner: Varun · Audience: engineering, security, product
-Companion build spec: `mahoraga-mvp.md`.
+Status: Production design draft · Owner: Varun · Audience: engineering, security, product
+Companion build spec: [`mahoraga-mvp.md`](mahoraga-mvp.md).
 
 ---
 
-## What changed in this revision
-
-Applied the latest review's specification corrections (no services added or removed):
-
-- **Production integration never publishes pre-resolved `DomainEvent`s.** The Spanner adapter (inside Dataflow) emits `SourceEvent`s; only the orchestrator's transaction produces `DomainEvent`s.
-- **Source and domain events have distinct identifiers.** `source_event_id` (causation link) vs `domain_event_id`; one source event may yield many domain facts.
-- **`SourceEvent` is self-describing** via an `event_type` discriminator.
-- **Canonical event hashing is defined and server-computed** (`canonical_source_hash`); a producer-supplied hash is never trusted.
-- **Source streams are bound to trusted tenant/engagement ownership;** reuse under another tenant/engagement is rejected.
-- **Domain ordering is reconstructable:** `effective_at` is the domain chronology; source stream, sequence, and a deterministic domain ordinal are tie-breakers; `recorded_at` is operational and never alters historical posture.
-- **Concurrent aggregate folds serialize safely from the first write:** database identity constraints make concurrent observations converge, and `aggregate_heads` is initialized before it is locked.
-- **Kubernetes kinds are modeled correctly:** Deployment/StatefulSet own Pods; a Service routes to Pods; canonical identity is `cluster_id + resource_kind + resource_uid`. Findings attach to the appropriate kind.
-- **Coverage compatibility is an executable predicate** (policy version 1), with a check-specific context fingerprint that distinguishes stable logical identity from ephemeral addresses.
-- **One production write path:** frontend commands use stable command IDs and are converted to internal `SourceEvent`s on a server-owned command stream; the frontend never grows an independent writer.
-- **The report identity is a report-writer** (insert-only on `report_versions`, no update/delete), not "read-only."
-- **Production completeness is partition-aware** and persisted behind one canonical boundary representation rather than assuming a scalar watermark.
-- **Provenance heads initialize safely under concurrency** (`INSERT … ON CONFLICT DO NOTHING` then `FOR UPDATE`).
-- **Evidence transitions and deletion behavior are defined** for readiness, controlled deletion, and unexpected object loss.
-- **Topology wording, tech-map MVP column, tradecraft wording, and authorization/provenance wording are reconciled** with `mahoraga-mvp.md`.
-
----
-
-## 0. TL;DR for a junior engineer
+## 0. Overview
 
 Armadin's swarm attacks a customer, writes down what it finds, then **forgets everything** when it's done. Every engagement starts from a blank notebook.
 

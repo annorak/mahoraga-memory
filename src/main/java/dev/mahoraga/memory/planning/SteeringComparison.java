@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * The validated two-arm result: both executed orders and causative metrics
- * alongside the equality evidence proving the arms differed only in memory
- * features. Produced exclusively by {@link SteeringEvidenceComparator}; the
- * metric values come from the arms, never from an expected constant.
+ * The two-arm result returned by {@link SteeringEvidenceComparator}: both
+ * executed orders, causative metrics, and the equality evidence showing the
+ * arms differed only in memory features. Metric values come from the arms,
+ * never from an expected constant.
  */
 public record SteeringComparison(
     List<String> controlExecutedOrder,

@@ -46,7 +46,7 @@ class MahoragaApplicationTest {
                 .anyMatch(singleton -> singleton.getClass().isAnnotationPresent(Path.class))
             || APP.getEnvironment().jersey().getResourceConfig().getClasses().stream()
                 .anyMatch(clazz -> clazz.isAnnotationPresent(Path.class));
-    assertTrue(!anyPathAnnotated, "no Jersey resource may be registered yet");
+    assertTrue(!anyPathAnnotated, "the MVP registers no Jersey resources");
 
     try (HttpClient client = HttpClient.newHttpClient()) {
       HttpRequest request =

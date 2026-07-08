@@ -8,9 +8,9 @@ import java.util.List;
 /**
  * The runner-only fixture control record. It is the one place allowed to hold
  * {@code F-*} scenario labels, frozen action outcomes, and the source-event IDs
- * that back each candidate action. Ingestion, identity, coverage, posture, and
- * planner code never accept this type; the planner receives only the narrowed
- * {@link PlannerCandidateSet} projected from it. Lists are copied defensively so
+ * behind each candidate action. Ingestion, identity, coverage, posture, and
+ * deterministic planner code never accept this type. Planner inputs are built
+ * from its narrowed {@link PlannerCandidateSet} projection. Lists are copied so
  * the loaded manifest is immutable.
  */
 public record RunnerManifest(
