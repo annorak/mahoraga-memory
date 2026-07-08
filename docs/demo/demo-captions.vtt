@@ -2,239 +2,260 @@ WEBVTT
 
 NOTE
 Draft captions matching the conversational narration in demo-script.md /
-demo-transcript.md. Cue times follow the script's timing budget (target 6:30).
-Before acceptance, reconcile them against what is actually said on the recording;
-captions never override the real narration. Synthetic MVP — no customer data.
+demo-transcript.md (and the read-off FINAL-SCRIPT.md). Cue times follow the
+script's timing budget (target ~7:15). Before acceptance, reconcile them against
+what is actually said on the recording; captions never override the real
+narration. Synthetic MVP — no customer data.
 
 1
 00:00.000 --> 00:04.000
 Synthetic MVP — no customer data.
 
 2
-00:04.000 --> 00:11.000
-Real quick before anything —
-everything here runs on fake data.
+00:04.000 --> 00:12.000
+Hey — I'm Varun. I built this thing called
+Mahoraga, let me walk you through it.
 
 3
-00:11.000 --> 00:17.000
-It's a synthetic demo, not hooked up
-to Armadin's real systems.
+00:12.000 --> 00:20.000
+Short version: it's a memory engine
+for offensive security.
 
 4
-00:17.000 --> 00:25.000
+00:20.000 --> 00:30.000
+I built it as one small service — Java, Postgres,
+a real transactional ingestion path —
+
+5
+00:30.000 --> 00:40.000
+plus deterministic synthetic fixtures. No LLM in
+the core, so it comes out identical every run.
+
+6
+00:40.000 --> 00:48.000
+First — and I'll keep saying this —
+everything here is fake data.
+
+7
+00:48.000 --> 00:56.000
 A swarm attacks a customer, finds a bunch
 of stuff, writes it down...
 
-5
-00:25.000 --> 00:30.000
-then the engagement ends and it throws
-the notebook away.
+8
+00:56.000 --> 01:03.000
+then the engagement ends
+and it throws the notebook away.
 
-6
-00:30.000 --> 00:35.000
+9
+01:03.000 --> 01:10.000
 Next quarter it starts from zero.
 That's what I'm fixing — the memory.
 
-7
-00:35.000 --> 00:43.000
+10
+01:10.000 --> 01:18.000
 One command does the whole thing.
 Preflight is just me being careful —
 
-8
-00:43.000 --> 00:50.000
-it checks Java, Docker, the build, the
-safety guards, and changes nothing.
-
-9
-00:50.000 --> 00:58.000
-Then it loads Engagement 1. Every fact is
-its own locked-down, tenant-scoped row.
-
-10
-00:58.000 --> 01:05.000
-When it's done we draw a hard line:
-everything we knew, as of right now.
-
 11
-01:05.000 --> 01:13.000
-Storing stuff is fine — the real question is
-does the memory change what you do next.
+01:18.000 --> 01:26.000
+it checks Java, Docker, the build,
+the guards, and changes nothing.
 
 12
-01:13.000 --> 01:21.000
-There's a planner, and it runs at that
-Engagement 1 line, before we know round two.
+01:26.000 --> 01:35.000
+It loads Engagement 1, then draws a hard line:
+everything we knew, as of right now.
 
 13
-01:21.000 --> 01:30.000
+01:35.000 --> 01:44.000
+Storing stuff is fine — does the memory
+change what you do next?
+
+14
+01:44.000 --> 01:53.000
+The planner runs at that Engagement 1 line,
+before we know round two.
+
+15
+01:53.000 --> 02:02.000
 And this is what people get wrong:
 it's so easy to let the future leak in.
 
-14
-01:30.000 --> 01:38.000
+16
+02:02.000 --> 02:11.000
 So the planner only ever sees opaque IDs.
 No labels, no results.
 
-15
-01:38.000 --> 01:46.000
+17
+02:11.000 --> 02:20.000
 Memory off, it goes in order: A, B, C.
 
-16
-01:46.000 --> 01:56.000
+18
+02:20.000 --> 02:31.000
 Memory on, it knows one got fixed last time
 and pulls it to the front: C, A, B.
 
-17
-01:56.000 --> 02:08.000
+19
+02:31.000 --> 02:41.000
 Both plans actually run — same starting point,
 same outcomes baked in.
 
-18
-02:08.000 --> 02:18.000
-And the bug that came back — memory catches it
-on the first move, not the third.
-
-19
-02:18.000 --> 02:25.000
-Three to one. And "zero events at planning"
-is me proving nothing leaked.
-
 20
-02:25.000 --> 02:34.000
-Between the two engagements the pod got a new
-ID, a new name, a new IP —
+02:41.000 --> 02:50.000
+The bug that came back? Memory catches it first,
+not third. Three to one. Nothing leaked.
 
 21
-02:34.000 --> 02:43.000
+02:50.000 --> 02:59.000
+Between the two engagements the pod got
+a new ID, a new name, a new IP —
+
+22
+02:59.000 --> 03:08.000
 everything you'd key on changed. But the
 Deployment underneath is the same.
 
-22
-02:43.000 --> 02:52.000
-So we keep it as the same asset, and the
-finding stays stuck to it.
-
 23
-02:52.000 --> 03:02.000
+03:08.000 --> 03:17.000
+So we keep it as the same asset,
+and the finding stays stuck to it.
+
+24
+03:17.000 --> 03:27.000
 Opposite case: something genuinely fuzzy,
 a reused DNS name with nothing behind it.
 
-24
-03:02.000 --> 03:11.000
-It doesn't guess. It marks it ambiguous and
-won't let it move any numbers.
-
 25
-03:11.000 --> 03:20.000
-It'd rather say "I don't know" than merge two
-things that might not match.
+03:27.000 --> 03:34.000
+It doesn't guess — it marks it ambiguous
+and won't let it move any numbers.
 
 26
-03:20.000 --> 03:30.000
+03:34.000 --> 03:40.000
+It'd rather say "I don't know" than merge
+two things that might not match.
+
+27
+03:40.000 --> 03:49.000
 Same exact Engagement 2 facts —
 I'm not touching the data.
 
-27
-03:30.000 --> 03:40.000
+28
+03:49.000 --> 03:58.000
 I'm just changing how much history
 it's allowed to look at.
 
-28
-03:40.000 --> 03:50.000
+29
+03:58.000 --> 04:08.000
 No memory, a normal scan: three detections,
 one not-detected, one partial.
 
-29
-03:50.000 --> 04:00.000
+30
+04:08.000 --> 04:18.000
 And the finding nobody retested? It just isn't
 there. The scan can't even see it.
 
-30
-04:00.000 --> 04:12.000
+31
+04:18.000 --> 04:28.000
 Turn history back on, same facts,
 and suddenly they mean something.
 
-31
-04:12.000 --> 04:24.000
+32
+04:28.000 --> 04:38.000
 New, still open, verified fixed, regressed,
 not retested, inconclusive.
 
-32
-04:24.000 --> 04:36.000
-"Verified fixed" only counts if we reran the
-same check and it came back clean.
-
 33
-04:36.000 --> 04:46.000
-Not seeing a bug is not the same as
-the bug being gone.
+04:38.000 --> 04:48.000
+"Verified fixed" only counts if we reran
+the same check and it came back clean.
 
 34
-04:46.000 --> 04:55.000
+04:48.000 --> 04:57.000
+Not seeing a bug is not the same
+as the bug being gone.
+
+35
+04:57.000 --> 05:05.000
 Only memory can tell you a fix came back,
 or that you forgot to retest something.
 
-35
-04:55.000 --> 05:05.000
+36
+05:05.000 --> 05:14.000
 This is the unglamorous stuff
 that just has to work.
 
-36
-05:05.000 --> 05:15.000
+37
+05:14.000 --> 05:23.000
 Same event twice — no-op.
 A conflicting one — rejected.
 
-37
-05:15.000 --> 05:25.000
+38
+05:23.000 --> 05:32.000
 Ask for a report before the data's complete —
 it blocks you.
 
-38
-05:25.000 --> 05:35.000
+39
+05:32.000 --> 05:41.000
 Shuffle the arrival order — same report.
 Kill a transaction halfway — nothing left behind.
 
-39
-05:35.000 --> 05:45.000
+40
+05:41.000 --> 05:50.000
 Same facts, same answer, every time.
 That's what you have to trust first.
 
-40
-05:45.000 --> 05:55.000
-Why does Armadin care — this turns a one-off scan
-into something you'd pay for every quarter.
-
 41
-05:55.000 --> 06:04.000
-Prove a fix regressed, prove something got
-verified, catch what nobody retested.
+05:50.000 --> 06:00.000
+So why did I actually build this?
+Honestly, mostly for fun.
 
 42
-06:04.000 --> 06:14.000
-Straight about what it isn't: not production-scale,
-not wired into Armadin, no auth or privacy claims.
+06:00.000 --> 06:10.000
+Armadin's probably already on this — but I think
+there's real power in memory for security.
 
 43
-06:14.000 --> 06:25.000
-The way it gets real: point a real swarm at a real
-target, write one adapter to this same contract.
+06:10.000 --> 06:20.000
+There's more I'd do. Integration: I found an
+open-source project called T3MP3ST —
 
 44
-06:25.000 --> 06:35.000
-That adapter's real work. But the memory engine
-underneath it is the part that's done.
+06:20.000 --> 06:30.000
+a multi-agent offensive framework that runs the
+whole kill chain, but has no memory.
 
 45
-06:35.000 --> 06:46.000
+06:30.000 --> 06:38.000
+Bolting Mahoraga onto something like that
+would be a super natural fit.
+
+46
+06:38.000 --> 06:48.000
+Architecture: split the memory flow into pieces —
+a writer, a reader, a report job, a shared core.
+
+47
+06:48.000 --> 06:58.000
+Plus topology drift, tradecraft memory, hash-chained
+provenance, and sharing learnings across customers.
+
+48
+06:58.000 --> 07:05.000
+Each is its own project. But the core —
+the memory engine — that's what's proven here.
+
+49
+07:05.000 --> 07:14.000
 Everything you saw — the 3-to-1, identity, the six
 categories, the correctness checks —
 
-46
-06:46.000 --> 06:55.000
+50
+07:14.000 --> 07:21.000
 none of it is hardcoded. It's computed from
 the actual run, identical every time.
 
-47
-06:55.000 --> 07:00.000
+51
+07:21.000 --> 07:25.000
 Fake data, yeah. But a real result.
 Thanks for watching.

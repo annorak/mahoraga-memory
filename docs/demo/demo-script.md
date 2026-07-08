@@ -1,11 +1,13 @@
 # Mahoraga Memory MVP — Demo Script
 
-A 6–7 minute walkthrough. The goal is to sound like a real person who built this
+A roughly 7-minute walkthrough. The goal is to sound like a real person who built this
 and cares about it — technical, but explaining things plainly, the way you'd talk
 a junior engineer through it. Not a pitch. Keep it honest and a little informal.
 
-- **Target runtime:** 6:30. **Hard maximum:** 7:59.
+- **Target runtime:** ~7:15. **Hard maximum:** 7:59.
 - **Audience:** Armadin engineering and product.
+- **Read-off version:** [`FINAL-SCRIPT.md`](../../FINAL-SCRIPT.md) is the plain
+  teleprompter with `▶ RUN` markers; this file is the annotated planning version.
 - **What you actually type:** two commands — `scripts/demo.sh preflight` and
   `scripts/demo.sh present`. Everything else is you talking over the output, and
   then walking through the proof block it prints at the end.
@@ -37,36 +39,54 @@ on screen — that's what you read from in segments 5–8.
 
 | Time | Segment | Max | Story beats |
 |---|---|---:|---|
-| 0:00–0:35 | The blank-notebook problem, and "this is fake data" | 0:35 | 1, 2 |
-| 0:35–1:05 | One command, and the Engagement 1 line | 0:30 | 3 |
-| 1:05–2:25 | The plans can't cheat, and the 3 → 1 | 1:20 | 4, 5, 6 |
-| 2:25–3:20 | Same thing after everything changed, and "I don't know" | 0:55 | 7, 8 |
-| 3:20–4:55 | Same facts, two lenses | 1:35 | 9 |
-| 4:55–5:45 | The boring stuff that has to be right | 0:50 | 10 |
-| 5:45–6:35 | Why Armadin cares, and what this isn't yet | 0:50 | 11 |
-| 6:35–7:00 | Wrap up | 0:25 | — |
+| 0:00–0:40 | Intro — who I am, what this is, how I built it | 0:40 | — |
+| 0:40–1:10 | The blank-notebook problem, and "this is fake data" | 0:30 | 1, 2 |
+| 1:10–1:35 | One command, and the Engagement 1 line | 0:25 | 3 |
+| 1:35–2:50 | The plans can't cheat, and the 3 → 1 | 1:15 | 4, 5, 6 |
+| 2:50–3:40 | Same thing after everything changed, and "I don't know" | 0:50 | 7, 8 |
+| 3:40–5:05 | Same facts, two lenses | 1:25 | 9 |
+| 5:05–5:50 | The boring stuff that has to be right | 0:45 | 10 |
+| 5:50–7:05 | Why I built this, and where it goes | 1:15 | 11 |
+| 7:05–7:25 | Wrap up | 0:20 | — |
 
 If a rehearsal runs long, cut words — don't add anything new to fill the buffer.
 
 ---
 
-## Segment 1 — The blank-notebook problem, and "this is fake data" (0:00–0:35, max 0:35)
+## Segment 0 — Intro: who I am, what this is, how I built it (0:00–0:40, max 0:40)
+
+- **On-screen action:** terminal up; the "Synthetic MVP — no customer data" line
+  is visible from the start.
+- **Expected output cue:** clean terminal, nothing run yet.
+- **Narration:** "Hey — I'm Varun. [one line about you: what you do / your
+  background.] I built this thing called Mahoraga and I want to walk you through it.
+  Short version: it's a memory engine for offensive security. I built it as one
+  small service — Java, Postgres, a real transactional ingestion path — plus a set
+  of deterministic synthetic fixtures that play out two engagements against the same
+  target. There's no LLM anywhere in the core; it's all plain, reproducible logic,
+  so everything you're about to see comes out identical every single time I run it.
+  Let me start with the problem, then just run it."
+- **Product meaning:** establish the person, the thing, and how it was built before
+  any jargon. Keep it warm and short.
+- **Transition:** "So, first the problem."
+
+## Segment 1 — The blank-notebook problem, and "this is fake data" (0:40–1:10, max 0:30)
 
 - **On-screen action:** terminal up; the "Synthetic MVP — no customer data" line
   is visible.
 - **Expected output cue:** clean terminal, nothing run yet.
-- **Narration:** "Okay, real quick before anything — everything here runs on fake
-  data. It's a synthetic demo, it is not hooked up to Armadin's actual systems. I
-  just want to be upfront about that. So, the problem I care about: you've got a
-  swarm that attacks a customer, finds a bunch of stuff, writes it all down — and
-  then the engagement ends and it basically throws the notebook away. Next quarter
-  it shows up and it's starting from zero. It can't tell you if the bug it found
-  last time is still there, or got fixed, or got fixed and then came right back.
-  That's the whole thing I'm trying to fix here. It's the memory."
-- **Product meaning:** name the gap in plain terms; set honest scope first.
+- **Narration:** "First — and I'll keep saying this — everything here is fake data.
+  It's a synthetic demo, it is not wired into Armadin's real systems. Okay. The
+  problem I care about: you've got a swarm that attacks a customer, finds a bunch of
+  stuff, writes it all down — and then the engagement ends and it basically throws
+  the notebook away. Next quarter it shows up and it's starting from zero. It can't
+  tell you if the bug it found last time is still there, or got fixed, or got fixed
+  and then came right back. That gap — that's the whole thing I'm trying to fix. It's
+  the memory."
+- **Product meaning:** name the gap in plain terms; keep the honest scope loud.
 - **Transition:** "Let me just run it."
 
-## Segment 2 — One command, and the Engagement 1 line (0:35–1:05, max 0:30)
+## Segment 2 — One command, and the Engagement 1 line (1:10–1:35, max 0:25)
 
 - **On-screen action:** type `scripts/demo.sh preflight`, then `scripts/demo.sh present`.
 - **Expected output cue:** `Preflight passed.`, then `== Preflight ==` and
@@ -81,7 +101,7 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
 - **Product meaning:** durable, boundary-controlled memory is the foundation.
 - **Transition:** "Because here's the part I actually care about."
 
-## Segment 3 — The plans can't cheat, and the 3 → 1 (1:05–2:25, max 1:20)
+## Segment 3 — The plans can't cheat, and the 3 → 1 (1:35–2:50, max 1:15)
 
 - **On-screen action:** talk while `== Memory disabled ==` and
   `== Memory enabled ==` run.
@@ -109,7 +129,7 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
   from what actually ran, not asserted.
 - **Transition:** "None of this works, though, if you can't tell it's the same thing."
 
-## Segment 4 — Same thing after everything changed, and "I don't know" (2:25–3:20, max 0:55)
+## Segment 4 — Same thing after everything changed, and "I don't know" (2:50–3:40, max 0:50)
 
 - **On-screen action:** talk; point at the identity block once it prints.
 - **Expected output cue:**
@@ -131,7 +151,7 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
   trustworthy instead of noisy.
 - **Transition:** "Alright, this next one's the one I'd actually show a customer."
 
-## Segment 5 — Same facts, two lenses (3:20–4:55, max 1:35)
+## Segment 5 — Same facts, two lenses (3:40–5:05, max 1:25)
 
 - **On-screen action:** walk through the two report blocks in the printed transcript.
 - **Expected output cue:**
@@ -166,7 +186,7 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
   repeated one-off scans.
 - **Transition:** "Real quick on the boring stuff, because it has to be right."
 
-## Segment 6 — The boring stuff that has to be right (4:55–5:45, max 0:50)
+## Segment 6 — The boring stuff that has to be right (5:05–5:50, max 0:45)
 
 - **On-screen action:** read the correctness block.
 - **Expected output cue:**
@@ -187,7 +207,7 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
 - **Product meaning:** the evidence behind the story holds up to real messiness.
 - **Transition:** "So — why does Armadin actually care."
 
-## Segment 7 — Why Armadin cares, and what this isn't yet (5:45–6:35, max 0:50)
+## Segment 7 — Why I built this, and where it goes (5:50–7:05, max 1:15)
 
 - **On-screen action:** transcript's `Scope` line visible.
 - **Expected output cue:**
@@ -195,21 +215,33 @@ If a rehearsal runs long, cut words — don't add anything new to fill the buffe
   Scope
   Synthetic product-value demonstration; not a production privacy or security validation.
   ```
-- **Narration:** "So why does Armadin care. This is the thing that turns a one-off
-  scan into something you'd actually pay for every quarter — you can prove a fix
-  regressed, you can prove something got verified instead of just not-seen, you can
-  catch the stuff nobody retested. And let me be straight about what this isn't:
-  it's not production-scale, it's not wired into Armadin, it doesn't do
-  authorization or any of the privacy or cross-tenant stuff — that's all on purpose,
-  it's later. The way this actually becomes real is you point a real swarm at a real
-  target — Armadin's, or honestly any of these agent frameworks — and you write one
-  adapter that turns its output into the same event contract you just watched go by.
-  That adapter is real work, it's not a one-liner. But the memory engine underneath
-  it — that's the part that's done, and that's what I just showed you."
-- **Product meaning:** credible business case with a defensible, honest boundary.
+- **Narration:** "So — why did I actually build this. Honestly, mostly for fun. I'm
+  pretty sure the folks at Armadin are already thinking about this, or already have
+  something like it. But I kept coming back to this idea that there's a ton of
+  untapped power in giving security systems real memory, and I just wanted to explore
+  it myself. It was a genuinely interesting problem to sit with. And there's a bunch
+  more I'd love to do with it. A few things I'm excited about. Integration — I found
+  this open-source project called T3MP3ST, a multi-agent offensive-security framework
+  that runs the whole kill chain, recon, exploit, all the way to reporting. Really
+  cool project, but it has no memory — every run is a blank slate. Bolting Mahoraga
+  onto something like that would be a super natural fit, and it'd let me show the
+  whole loop end to end against a real target instead of fixtures. Then architecture —
+  I built this as one app to keep it simple, but the memory flow really wants to be
+  split into separate pieces: a writer that owns ingestion and the transaction, a
+  reader that just serves memory back out, a separate report job, a shared core.
+  Pull those apart and each part can scale and fail on its own. And then a longer list
+  I find genuinely interesting: tracking how the environment itself drifts over time,
+  not just the findings; tradecraft memory, which techniques actually worked against
+  which kinds of stacks; real tamper-evident provenance with a hash chain; and
+  eventually the hard, fascinating one — safely sharing learnings across customers
+  without leaking anyone's data. Each of those is its own project. But the core — the
+  memory engine, the part that has to be correct — that's what I've got working and
+  proven right here."
+- **Product meaning:** honest, personal framing; shows depth through what you'd build
+  next, not through overclaiming what exists.
 - **Transition:** "Okay, wrapping up."
 
-## Segment 8 — Wrap up (6:35–7:00, max 0:25)
+## Segment 8 — Wrap up (7:05–7:25, max 0:20)
 
 - **On-screen action:** the full proof block is on screen.
 - **Expected output cue:** the complete printed proof, ending at the `Scope` line.

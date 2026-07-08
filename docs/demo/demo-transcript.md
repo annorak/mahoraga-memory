@@ -1,27 +1,37 @@
 # Mahoraga Memory MVP — Demo Transcript
 
 Narration transcript for the demo video, matching the conversational narration in
-[`demo-script.md`](demo-script.md). Timecodes follow the script's timing budget
-(target 6:30). Before acceptance, this transcript and
-[`demo-captions.vtt`](demo-captions.vtt) get reconciled against what you actually
-say on the recording — they never override the real narration.
+[`demo-script.md`](demo-script.md). Timecodes follow the script's ~7:15 budget.
+Before acceptance, this transcript and [`demo-captions.vtt`](demo-captions.vtt)
+get reconciled against what you actually say on the recording — they never
+override the real narration.
 
 > On-screen and spoken at the start: **Synthetic MVP — no customer data.**
 
 ---
 
-**[0:00–0:35] The blank-notebook problem, and "this is fake data"**
+**[0:00–0:40] Intro**
 
-Okay, real quick before anything — everything here runs on fake data. It's a
-synthetic demo, it is not hooked up to Armadin's actual systems. I just want to be
-upfront about that. So, the problem I care about: you've got a swarm that attacks
-a customer, finds a bunch of stuff, writes it all down — and then the engagement
-ends and it basically throws the notebook away. Next quarter it shows up and it's
-starting from zero. It can't tell you if the bug it found last time is still there,
-or got fixed, or got fixed and then came right back. That's the whole thing I'm
-trying to fix here. It's the memory.
+Hey — I'm Varun. [one line about you: what you do / your background.] I built this
+thing called Mahoraga and I want to walk you through it. Short version: it's a
+memory engine for offensive security. I built it as one small service — Java,
+Postgres, a real transactional ingestion path — plus a set of deterministic
+synthetic fixtures that play out two engagements against the same target. There's
+no LLM anywhere in the core; it's all plain, reproducible logic, so everything
+you're about to see comes out identical every single time I run it. Let me start
+with the problem, then just run it.
 
-**[0:35–1:05] One command, and the Engagement 1 line**
+**[0:40–1:10] The blank-notebook problem, and "this is fake data"**
+
+First — and I'll keep saying this — everything here is fake data. It's a synthetic
+demo, it is not wired into Armadin's real systems. Okay. The problem I care about:
+you've got a swarm that attacks a customer, finds a bunch of stuff, writes it all
+down — and then the engagement ends and it basically throws the notebook away. Next
+quarter it shows up and it's starting from zero. It can't tell you if the bug it
+found last time is still there, or got fixed, or got fixed and then came right back.
+That gap — that's the whole thing I'm trying to fix. It's the memory.
+
+**[1:10–1:35] One command, and the Engagement 1 line**
 
 One command does the whole thing. This first part, preflight, is just me being
 careful — it checks Java, Docker, that the build's there, that the safety guards
@@ -30,7 +40,7 @@ fact it learns is its own row, locked down, scoped to the tenant. And when the
 engagement's done, we draw a hard line that says "this is everything we knew, as of
 right now." Hang on to that line, it matters in a second.
 
-**[1:05–2:25] The plans can't cheat, and the 3 → 1**
+**[1:35–2:50] The plans can't cheat, and the 3 → 1**
 
 Storing stuff is fine, whatever — the real question is whether the memory changes
 what you do next. So there's a planner, and it runs at that Engagement 1 line,
@@ -45,7 +55,7 @@ same outcomes baked in. And the bug that came back — memory catches it on the 
 first move instead of the third. Three to one. And that "zero events at planning"
 line is just me proving nothing leaked.
 
-**[2:25–3:20] Same thing after everything changed, and "I don't know"**
+**[2:50–3:40] Same thing after everything changed, and "I don't know"**
 
 Between the two engagements the pod got a new ID, a new name, a new IP — basically
 everything you'd normally key on changed. But the actual Deployment underneath is
@@ -56,7 +66,7 @@ doesn't guess. It marks it ambiguous and flat-out refuses to let it move any
 numbers. It'd rather say "I don't know" than smash two things together that might
 not be the same thing.
 
-**[3:20–4:55] Same facts, two lenses**
+**[3:40–5:05] Same facts, two lenses**
 
 Same exact Engagement 2 facts — I'm not touching the data — I'm just changing how
 much history it's allowed to look at. With no memory, which is what a normal
@@ -70,7 +80,7 @@ reran the same check and it came back clean. Not seeing a bug is not the same as
 the bug being gone. Only the memory version can tell you a fix came back, or that
 you straight-up forgot to retest something.
 
-**[4:55–5:45] The boring stuff that has to be right**
+**[5:05–5:50] The boring stuff that has to be right**
 
 This is the unglamorous stuff that just has to work. Send the same event twice —
 no-op, nothing happens. Send a conflicting one — rejected. Ask for a report before
@@ -79,21 +89,31 @@ in — you get the exact same report. Kill a transaction halfway through — not
 left behind, no half-written mess. Same facts, same answer, every time. That's the
 part you have to be able to trust before any of the rest matters.
 
-**[5:45–6:35] Why Armadin cares, and what this isn't yet**
+**[5:50–7:05] Why I built this, and where it goes**
 
-So why does Armadin care. This is the thing that turns a one-off scan into
-something you'd actually pay for every quarter — you can prove a fix regressed, you
-can prove something got verified instead of just not-seen, you can catch the stuff
-nobody retested. And let me be straight about what this isn't: it's not
-production-scale, it's not wired into Armadin, it doesn't do authorization or any
-of the privacy or cross-tenant stuff — that's all on purpose, it's later. The way
-this actually becomes real is you point a real swarm at a real target — Armadin's,
-or honestly any of these agent frameworks — and you write one adapter that turns
-its output into the same event contract you just watched go by. That adapter is
-real work, it's not a one-liner. But the memory engine underneath it — that's the
-part that's done, and that's what I just showed you.
+So — why did I actually build this. Honestly, mostly for fun. I'm pretty sure the
+folks at Armadin are already thinking about this, or already have something like
+it. But I kept coming back to this idea that there's a ton of untapped power in
+giving security systems real memory, and I just wanted to explore it myself. It was
+a genuinely interesting problem to sit with. And there's a bunch more I'd love to do
+with it. A few things I'm excited about. Integration — I found this open-source
+project called T3MP3ST, a multi-agent offensive-security framework that runs the
+whole kill chain, recon, exploit, all the way to reporting. Really cool project, but
+it has no memory — every run is a blank slate. Bolting Mahoraga onto something like
+that would be a super natural fit, and it'd let me show the whole loop end to end
+against a real target instead of fixtures. Then architecture — I built this as one
+app to keep it simple, but the memory flow really wants to be split into separate
+pieces: a writer that owns ingestion and the transaction, a reader that just serves
+memory back out, a separate report job, a shared core. Pull those apart and each
+part can scale and fail on its own. And then a longer list I find genuinely
+interesting: tracking how the environment itself drifts over time, not just the
+findings; tradecraft memory, which techniques actually worked against which kinds of
+stacks; real tamper-evident provenance with a hash chain; and eventually the hard,
+fascinating one — safely sharing learnings across customers without leaking anyone's
+data. Each of those is its own project. But the core — the memory engine, the part
+that has to be correct — that's what I've got working and proven right here.
 
-**[6:35–7:00] Wrap up**
+**[7:05–7:25] Wrap up**
 
 And that's it. Everything you just saw — the three-to-one, the identity stuff, the
 six categories, all the correctness checks — none of it is hardcoded. It's all
